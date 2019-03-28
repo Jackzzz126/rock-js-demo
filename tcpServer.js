@@ -1,4 +1,11 @@
 var rock = require('./rock/rock');
+require('./config')
+require('./log')
+
+gLog.debug("Demo debug msg");
+gLog.info("Demo info msg");
+gLog.warn("Demo warn msg");
+gLog.error("Demo error msg");
 
 function onConn(socket) {
     console.log("Client connected: " + socket.remoteAddress + ":" + socket.remotePort);
@@ -35,5 +42,5 @@ function onConn(socket) {
 }
 
 rock.tcpServer.run(8000, onConn);
-console.log("Tcp server start at 8000");
+gLog.info("Tcp server start at %d.", gConfig.serverConfig.port);
 

@@ -1,4 +1,11 @@
 var rock = require('./rock/rock');
+require('./config')
+require('./log')
+
+gLog.debug("Demo debug msg");
+gLog.info("Demo info msg");
+gLog.warn("Demo warn msg");
+gLog.error("Demo error msg");
 
 function onConn(socket, req) {
 	var addressStr = req.connection.remoteAddress;
@@ -24,8 +31,8 @@ function onConn(socket, req) {
 	});
 }
 
-rock.wsServer.run(8000, onConn);
-console.log("Ws server start at 8000");
+rock.wsServer.run(gConfig.serverConfig.port, onConn);
+gLog.info("Ws server start at %d", gConfig.serverConfig.port);
 
 //rock.wsServer.run(8001, onConn,
 //		'./https_keys/1_yx-tuya.philm.cc_bundle.crt',

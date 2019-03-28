@@ -1,4 +1,3 @@
-var log4js = require('log4js');
 var rock = require('./rock/rock');
 require('./config')
 require('./log')
