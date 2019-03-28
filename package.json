@@ -1,0 +1,8 @@
+{
+	"name": "rock",
+	"version": "1.0.0",
+	"dependencies": {
+		"log4js": "^2.5.3",
+		"ws": "^4.1.0"
+	}
+}

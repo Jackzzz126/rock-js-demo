@@ -1,0 +1,40 @@
+{
+	"esversion" : 6,
+
+	"boss":      false,
+	"eqeqeq":    true,
+	"strict":    false,
+	"newcap":    false,
+	"undef":     true,
+	"unused":    "vars",
+	"onecase":   true,
+	"lastsemic": false,
+	"bitwise": true,
+	"curly": true,
+	"forin": false,
+	"immed": true,
+	"latedef": "nofunc",
+	"funcscope": false,
+
+	"noarg": true,
+	"noempty": true,
+	"nonew": true,
+	"plusplus": false,
+	"trailing": true,
+	"nonstandard": false,
+	"indent": 4,
+	"expr": true,
+
+	"node":      true,
+	"jquery":    true,
+	"browser":   true,
+	"devel":   true,
+
+	"predef":
+	[
+		"describe",//mocha
+		"before",//mocha
+		"after",//mocha
+		"it"//mocha
+	]
+}
