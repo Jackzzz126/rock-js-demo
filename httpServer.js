@@ -1,33 +1,12 @@
 var log4js = require('log4js');
 var rock = require('./rock/rock');
+require('./config')
+require('./log')
 
-global.gConfig = {
-	logConfig : {
-		'level' : 'debug',//debug
-		//'level' : 'info',//release
-	},
-	serverConfig : {
-		'port' : 8080,
-	},
-};
-
-global.gLog = rock.log4js.createLog("roomMgr");
-log4js.configure({
-	appenders: {
-		console: {type: 'console'},
-		dateFileMain: {
-			type: 'dateFile',
-			filename: 'logs/roomMgr',
-			pattern : "_yyyyMMddhh.log",
-			maxLogSize : 1024 * 1024 * 1024,
-			alwaysIncludePattern: true,
-		}
-	},
-	categories: {
-		default: { appenders: ['console'], level: 'all' },
-		roomMgr: { appenders: ['console', 'dateFileMain'], level: gConfig.logConfig.level }
-	}
-});
+gLog.debug("Demo debug msg");
+gLog.info("Demo info msg");
+gLog.warn("Demo warn msg");
+gLog.error("Demo error msg");
 
 function onRequest(request, response){
 	var postData = [];
