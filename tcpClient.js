@@ -1,5 +1,7 @@
 var net = require("net");
 
+require('./global')
+
 var dataPacksRecved = [];
 var socket = net.createConnection(8000, "127.0.0.1");
 socket.on("connect", onConn);

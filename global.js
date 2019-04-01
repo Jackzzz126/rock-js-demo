@@ -1,6 +1,18 @@
 var rock = require('./rock/rock');
 var log4js = require('log4js');
 
+//--------------------------gConfig--------------------------------------------
+global.gConfig = {};
+gConfig.logConfig = {
+	'name' : 'main',
+	'level' : 'debug',//debug
+	//'level' : 'info',//release
+};
+gConfig.serverConfig = {
+	'port' : 8080,
+};
+
+//--------------------------gLog--------------------------------------------
 /*global gLog : true */
 global.gLog = rock.log4js.createLog(gConfig.logConfig.name);
 

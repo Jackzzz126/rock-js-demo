@@ -1,6 +1,5 @@
 var rock = require('./rock/rock');
-require('./config')
-require('./log')
+require('./global')
 
 gLog.debug("Demo debug msg");
 gLog.info("Demo info msg");
