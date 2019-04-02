@@ -1,3 +1,5 @@
+let route = require('./route').route;
+let proto = require('./proto');
 
 function onConn(socket) {
 	gLog.debug("Client connected: " + socket.remoteAddress + ":" + socket.remotePort);
@@ -23,12 +25,10 @@ function onConn(socket) {
 	function onSocketError(err)
 	{
 		gLog.info("Socket error: ", err);
-		socket.close();
 	}
 	function onSocketClose(hasError)
 	{
 		gLog.info("Socket close: ", hasError);
-		socket.close();
 	}
 	function onSocketTimeout()
 	{
@@ -60,21 +60,23 @@ function onConn(socket) {
 			return false;
 		}
 
-		if (typeof router[packId] !== 'function')
+		if (typeof route[packId] !== 'function')
 		{
 			gLog.debug("No handle for pack: %d.", packId);
 			return false;
 		}
-		if(!msg) {
+
+		var packBuff = buff.slice(headLen, headLen + packLen);
+		debugger;
+		let reqMsg = proto.parsePack(packId, packBuff);
+		if(!reqMsg) {
 			gLog.debug("Error when pase pack: %d.", packId);
 			return false;
 		}
-		var packBuff = buff.slice(headLen, headLen + packLen);
-		let reqMsg = proto.parsePack(packId, packBuff);
 		try
 		{
-			router[packId](socket.connData, reqMsg, function(resMsg) {
-				proto.resPack(packId + 1, resMsg);
+			route[packId](socket.connData, reqMsg, function(resMsg) {
+				proto.sendPack(socket, packId + 1, resMsg);
 			});
 		}
 		catch(ex)

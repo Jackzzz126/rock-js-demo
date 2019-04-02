@@ -1,13 +1,11 @@
 let protobuf = require("protobufjs");
 let async = require('async')
-let msgNum = require("../" + gConfig.serverConfig.protoPath + "/MsgNum").msgNum;
 
 let numMsg = {};//msgNum : msgObj
 
-
-function init(cb1) {
+function init(protoPath, msgNum, cb1) {
 	async.eachOf(msgNum, function(module, key, cb2) {
-		protobuf.load(gConfig.serverConfig.protoPath + "/" + key + ".proto", function (err, root) {
+		protobuf.load(protoPath + "/" + key + ".proto", function (err, root) {
 			if(err) {
 				cb2(err);
 				return;
@@ -31,8 +29,8 @@ function parsePack(packId, packBuff) {
 	}
 }
 
-function resPack(packId, resObj) {
-	var dataBuff = numMsg[packId].encode(resObj).toBuffer();
+function sendPack(socket, packId, packObj) {
+	var dataBuff = numMsg[packId].encode(packObj).finish();
 	var headBuff = new Buffer(8);
 	/*jshint bitwise:false*/
 	headBuff.writeInt32BE(packId ^ 0x79669966, 0);
@@ -47,6 +45,6 @@ function resPack(packId, resObj) {
 
 exports.init = init;
 exports.parsePack = parsePack;
-exports.resObj = resPack;
+exports.sendPack = sendPack;
 
 

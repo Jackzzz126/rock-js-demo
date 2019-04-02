@@ -1,8 +1,8 @@
 function heartBeat(connData, reqMsg, cb) {
 	let resMsg = {};
-	rtnMsg.status = {};
-	rtnMsg.status.code = 0;
-	rtnMsg.status.msg = "OK";
+	resMsg.status = {};
+	resMsg.status.code = 0;
+	resMsg.status.msg = "OK";
 	cb(resMsg);
 }
 
