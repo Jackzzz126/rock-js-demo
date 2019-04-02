@@ -2,6 +2,7 @@
 function onConn(socket) {
 	gLog.debug("Client connected: " + socket.remoteAddress + ":" + socket.remotePort);
 	socket.setNoDelay(true);
+	socket.connData = {};
 
 	let dataPacksRecved = [];
 
@@ -69,10 +70,12 @@ function onConn(socket) {
 			return false;
 		}
 		var packBuff = buff.slice(headLen, headLen + packLen);
-		let msg = proto.parsePack(packId, packBuff);
+		let reqMsg = proto.parsePack(packId, packBuff);
 		try
 		{
-			router[packId](socket, packBuff);
+			router[packId](socket.connData, reqMsg, function(resMsg) {
+				proto.resPack(packId + 1, resMsg);
+			});
 		}
 		catch(ex)
 		{

@@ -26,11 +26,27 @@ function parsePack(packId, packBuff) {
 	if(!msg) {
 		return null;
 	} else {
-		return msg.decode(packBuff);
+		let msgData = msg.decode(packBuff);
+		return msgData;
 	}
 }
 
-exports.parsePack = parsePack;
+function resPack(packId, resObj) {
+	var dataBuff = numMsg[packId].encode(resObj).toBuffer();
+	var headBuff = new Buffer(8);
+	/*jshint bitwise:false*/
+	headBuff.writeInt32BE(packId ^ 0x79669966, 0);
+	headBuff.writeInt32BE(dataBuff.length ^ 0x79669966, 4);
+
+	if(socket.writable)
+	{
+		socket.write(headBuff);
+		socket.end(dataBuff);
+	}
+}
+
 exports.init = init;
+exports.parsePack = parsePack;
+exports.resObj = resPack;
 
 
