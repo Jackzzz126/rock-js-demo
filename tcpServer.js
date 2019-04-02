@@ -1,8 +1,8 @@
 let rock = require('./rock/rock');
-require('./global')
-let proto = require('./proto');
 
-let connMgr = require('./connMgr');
+require('./core/global')
+let proto = require('./core/proto');
+let connMgr = require('./core/connMgr');
 
 gLog.debug("Demo debug msg");
 gLog.info("Demo info msg");

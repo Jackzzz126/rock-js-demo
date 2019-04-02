@@ -1,6 +1,6 @@
 let protobuf = require("protobufjs");
 let async = require('async')
-let msgNum = require(gConfig.serverConfig.protoPath + "/MsgNum").msgNum;
+let msgNum = require("../" + gConfig.serverConfig.protoPath + "/MsgNum").msgNum;
 
 let numMsg = {};//msgNum : msgObj
 
