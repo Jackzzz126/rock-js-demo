@@ -1,45 +1,27 @@
-var rock = require('./rock/rock');
+let rock = require('./rock/rock');
 require('./global')
+let proto = require('./proto');
+
+let connMgr = require('./connMgr');
 
 gLog.debug("Demo debug msg");
 gLog.info("Demo info msg");
 gLog.warn("Demo warn msg");
 gLog.error("Demo error msg");
 
-function onConn(socket) {
-    console.log("Client connected: " + socket.remoteAddress + ":" + socket.remotePort);
-
-    var dataPacksRecved = [];
-
-	socket.on("data", onRecvData);
-	socket.on("error", onSocketError);
-	socket.on("close", onSocketClose);
-	socket.on("timeout", onSocketTimeout);
-	function onRecvData(dataBuff)
-	{
-		socket.setNoDelay(true);
-
-		dataPacksRecved.push(dataBuff);
-        var buff = Buffer.concat(dataPacksRecved);
-        console.log("Recv data: ", buff.toString());
-        socket.write("world");
-	}
-	
-	function onSocketError(err)
-	{
-        console.log("Socket error: ", err);
-	}
-	function onSocketClose(hasError)
-	{
-        console.log("Socket close: ", hasError);
-	}
-	function onSocketTimeout()
-	{
-		socket.end();
-        console.log("Socket time out.");
-	}
+_initProto();
+function _initProto() {
+	proto.init(function(err) {
+		if(err) {
+			gLog.error("Proto init error: %s", err);
+			return;
+		}
+		_startServer();
+	});
 }
 
-rock.tcpServer.run(8000, onConn);
-gLog.info("Tcp server start at %d.", gConfig.serverConfig.port);
+function _startServer() {
+	rock.tcpServer.run(8000, connMgr.onConn);
+	gLog.info("Tcp server start at %d.", gConfig.serverConfig.port);
+}
 

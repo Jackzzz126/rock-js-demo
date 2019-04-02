@@ -10,6 +10,7 @@ gConfig.logConfig = {
 };
 gConfig.serverConfig = {
 	'port' : 8080,
+	'protoPath' : './proto'
 };
 
 //--------------------------gLog--------------------------------------------
