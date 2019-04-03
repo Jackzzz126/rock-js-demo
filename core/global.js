@@ -14,7 +14,6 @@ gConfig.serverConfig = {
 };
 
 //--------------------------gLog--------------------------------------------
-/*global gLog : true */
 global.gLog = rock.log4js.createLog(gConfig.logConfig.name);
 
 log4js.configure({

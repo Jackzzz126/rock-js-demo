@@ -1,5 +1,5 @@
 let protobuf = require("protobufjs");
-let async = require('async')
+let async = require('async');
 
 let numMsg = {};//msgNum : msgObj
 
@@ -17,19 +17,21 @@ function init(protoPath, msgNum, cb1) {
 		});
 	}, function(err) {
 		cb1(err);
-	})
+	});
 }
 function parsePack(packId, packBuff) {
 	let msg = numMsg[packId];
 	if(!msg) {
 		return null;
 	} else {
-		let msgData = msg.decode(packBuff);
-		return msgData;
+		let packObj = msg.decode(packBuff);
+		gLog.debug("req: %d %s", packId, JSON.stringify(packObj));
+		return packObj;
 	}
 }
 
 function sendPack(socket, packId, packObj) {
+	gLog.debug("res: %d %s", packId, JSON.stringify(packObj));
 	var dataBuff = numMsg[packId].encode(packObj).finish();
 	var headBuff = new Buffer(8);
 	/*jshint bitwise:false*/

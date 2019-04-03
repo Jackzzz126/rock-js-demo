@@ -67,7 +67,6 @@ function onConn(socket) {
 		}
 
 		var packBuff = buff.slice(headLen, headLen + packLen);
-		debugger;
 		let reqMsg = proto.parsePack(packId, packBuff);
 		if(!reqMsg) {
 			gLog.debug("Error when pase pack: %d.", packId);
@@ -91,7 +90,7 @@ function onConn(socket) {
 		} else {
 			dataPacksRecved = [];
 			var restBuff = new Buffer(restLen);
-			recvBuff.copy(restBuff, 0, headLen + packLen, buffLen);
+			buff.copy(restBuff, 0, headLen + packLen, buffLen);
 			dataPacksRecved.push(restBuff);
 			return true;
 		}

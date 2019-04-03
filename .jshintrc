@@ -32,6 +32,10 @@
 
 	"predef":
 	[
+		"gConfig",
+		"gLog",
+		"gUsers",
+
 		"describe",//mocha
 		"before",//mocha
 		"after",//mocha
