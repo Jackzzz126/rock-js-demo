@@ -1,9 +1,8 @@
 let rock = require('./rock/rock');
 
-require('./core/global')
+require('./core/global');
 let proto = require('./core/proto');
 let connMgr = require('./core/connMgr');
-let msgNum = require(gConfig.serverConfig.protoPath + "/MsgNum").msgNum;
 
 gLog.debug("Demo debug msg");
 gLog.info("Demo info msg");
@@ -12,7 +11,7 @@ gLog.error("Demo error msg");
 
 _initProto();
 function _initProto() {
-	proto.init(gConfig.serverConfig.protoPath, msgNum, function(err) {
+	proto.init(gConfig.serverConfig.protoPath, function(err) {
 		if(err) {
 			gLog.error("Proto init error: %s", err);
 			return;

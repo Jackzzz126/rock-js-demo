@@ -1,10 +1,7 @@
-var net = require("net");
+require('../core/global');
+let proto = require('../core/proto');
 
-require('../core/global')
-let proto = require('../core/proto')
-let msgNum = require("../" + gConfig.serverConfig.protoPath + "/MsgNum").msgNum;
-
-let userMgr = require('./userMgr')
+let userMgr = require('./userMgr');
 
 global.gUsers = [];
 
@@ -12,7 +9,7 @@ describe("Init", function() {
 	before(function() {
 	});
 	it("proto init", function(done){
-		proto.init(gConfig.serverConfig.protoPath, msgNum, function(err) {
+		proto.init(gConfig.serverConfig.protoPath, function(err) {
 			if(err) {
 				gLog.error("Proto init error: %s", err);
 			}

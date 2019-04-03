@@ -1,22 +1,30 @@
 let protobuf = require("protobufjs");
 let async = require('async');
+let fs = require('fs');
+var hoconParser = require('hocon-parser');
 
 let numMsg = {};//msgNum : msgObj
 
-function init(protoPath, msgNum, cb1) {
-	async.eachOf(msgNum, function(module, key, cb2) {
-		protobuf.load(protoPath + "/" + key + ".proto", function (err, root) {
-			if(err) {
-				cb2(err);
-				return;
-			}
-			for(let i in module) {
-				numMsg[module[i][1]] = root.lookupType(module[i][0]);
-			}
-			cb2();
+function init(protoPath, cb1) {
+	fs.readFile(protoPath + '/msgId.conf', (err, data) => {
+		if (err) {
+			gLog.error("Error when read model list");
+		}
+		let msgIds = hoconParser(data.toString());
+		async.eachOf(msgIds, function(module, key, cb2) {
+			protobuf.load(protoPath + "/" + key + ".proto", function (err, root) {
+				if(err) {
+					cb2(err);
+					return;
+				}
+				for(let i in module) {
+					numMsg[module[i][1]] = root.lookupType(module[i][0]);
+				}
+				cb2();
+			});
+		}, function(err) {
+			cb1(err);
 		});
-	}, function(err) {
-		cb1(err);
 	});
 }
 function parsePack(packId, packBuff) {
