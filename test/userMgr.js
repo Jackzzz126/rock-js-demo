@@ -1,6 +1,6 @@
 var net = require("net");
 
-let proto = require('../core/proto')
+let proto = require('../core/proto');
 
 function newUser() {
 	let user = {};
@@ -8,7 +8,7 @@ function newUser() {
 	user.conn = function(port, ip, cb) {
 		var dataPacksRecved = [];
 
-		socket = net.createConnection(port, ip);
+		let socket = net.createConnection(port, ip);
 		user._socket = socket;
 		socket.on("connect", onConn);
 		socket.on("error", onError);
@@ -38,8 +38,8 @@ function newUser() {
 				return false;
 			}
 			/*jshint bitwise:false*/
-			var packId = dataPacksRecved[0].readInt32BE(0) ^ 0x79669966;
-			var packLen = dataPacksRecved[0].readInt32BE(4) ^ 0x79669966;
+			var packId = buff.readInt32BE(0) ^ 0x79669966;
+			var packLen = buff.readInt32BE(4) ^ 0x79669966;
 
 			if(packLen > 1024 * 4) {
 				gLog.debug("Pack too long.(>4k)");
@@ -57,13 +57,11 @@ function newUser() {
 			if (typeof user[packId] !== 'function')
 			{
 				gLog.debug("No handle for pack: %d.", packId);
-				return false;
 			}
 			var packBuff = buff.slice(headLen, headLen + packLen);
 			let reqMsg = proto.parsePack(packId, packBuff);
 			if(!reqMsg) {
 				gLog.debug("Error when pase pack: %d.", packId);
-				return false;
 			}
 			try
 			{
@@ -75,21 +73,25 @@ function newUser() {
 				gLog.error(ex.stack);
 			}
 
+			dataPacksRecved = [];
 			var restLen = buffLen - headLen - packLen;
 			if(restLen <= 0) {
 				return false;
 			} else {
-				dataPacksRecved = [];
 				var restBuff = new Buffer(restLen);
-				recvBuff.copy(restBuff, 0, headLen + packLen, buffLen);
+				buff.copy(restBuff, 0, headLen + packLen, buffLen);
 				dataPacksRecved.push(restBuff);
 				return true;
 			}
 		}
-	}
+	};
 
 	user.sendPack = function(packId, reqMsg) {
 		proto.sendPack(this._socket, packId, reqMsg);
+	};
+
+	user.close = function() {
+		this._socket.end();
 	};
 
 	return user;

@@ -25,24 +25,27 @@ function parsePack(packId, packBuff) {
 		return null;
 	} else {
 		let packObj = msg.decode(packBuff);
-		gLog.debug("req: %d %s", packId, JSON.stringify(packObj));
+		gLog.debug("recv: %d %s", packId, JSON.stringify(packObj));
 		return packObj;
 	}
 }
 
 function sendPack(socket, packId, packObj) {
-	gLog.debug("res: %d %s", packId, JSON.stringify(packObj));
-	var dataBuff = numMsg[packId].encode(packObj).finish();
-	var headBuff = new Buffer(8);
+	gLog.debug("send: %d %s", packId, JSON.stringify(packObj));
+	let dataBuff = numMsg[packId].encode(packObj).finish();
+	let dataBuffLen = dataBuff.length;
+	let headBuff = new Buffer(8);
 	/*jshint bitwise:false*/
 	headBuff.writeInt32BE(packId ^ 0x79669966, 0);
-	headBuff.writeInt32BE(dataBuff.length ^ 0x79669966, 4);
+	headBuff.writeInt32BE(dataBuffLen ^ 0x79669966, 4);
 
-	if(socket.writable)
-	{
-		socket.write(headBuff);
-		socket.end(dataBuff);
+	if(socket.writable) {
+		let buff = Buffer.concat([headBuff, dataBuff], dataBuffLen + 8);
+		socket.write(buff);
+	} else {
+		gLog.debug("socket is unwritable");
 	}
+
 }
 
 exports.init = init;

@@ -22,18 +22,20 @@ function onConn(socket) {
 		}
 	}
 
-	function onSocketError(err)
-	{
-		gLog.info("Socket error: ", err);
+	function onSocketError(err) {
+		gLog.debug("socket error: ", err);
 	}
-	function onSocketClose(hasError)
-	{
-		gLog.info("Socket close: ", hasError);
+	function onSocketClose(hasError) {
+		if(hasError) {
+			gLog.debug("socket close with error");
+		} else {
+			gLog.debug("socket close");
+		}
 	}
 	function onSocketTimeout()
 	{
 		socket.end();
-		gLog.info("Socket time out.");
+		gLog.debug("socket time out.");
 	}
 
 	function _parsePack() {
@@ -44,8 +46,8 @@ function onConn(socket) {
 			return false;
 		}
 		/*jshint bitwise:false*/
-		var packId = dataPacksRecved[0].readInt32BE(0) ^ 0x79669966;
-		var packLen = dataPacksRecved[0].readInt32BE(4) ^ 0x79669966;
+		var packId = buff.readInt32BE(0) ^ 0x79669966;
+		var packLen = buff.readInt32BE(4) ^ 0x79669966;
 
 		if(packLen > 1024 * 4) {
 			gLog.debug("Pack too long.(>4k)");
@@ -63,14 +65,12 @@ function onConn(socket) {
 		if (typeof route[packId] !== 'function')
 		{
 			gLog.debug("No handle for pack: %d.", packId);
-			return false;
 		}
 
 		var packBuff = buff.slice(headLen, headLen + packLen);
 		let reqMsg = proto.parsePack(packId, packBuff);
 		if(!reqMsg) {
 			gLog.debug("Error when pase pack: %d.", packId);
-			return false;
 		}
 		try
 		{
@@ -84,11 +84,11 @@ function onConn(socket) {
 			gLog.error(ex.stack);
 		}
 
+		dataPacksRecved = [];
 		var restLen = buffLen - headLen - packLen;
 		if(restLen <= 0) {
 			return false;
 		} else {
-			dataPacksRecved = [];
 			var restBuff = new Buffer(restLen);
 			buff.copy(restBuff, 0, headLen + packLen, buffLen);
 			dataPacksRecved.push(restBuff);
