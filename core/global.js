@@ -1,4 +1,4 @@
-var rock = require('../rock/rock');
+var rock = require('../rock');
 var log4js = require('log4js');
 
 //--------------------------gConfig--------------------------------------------

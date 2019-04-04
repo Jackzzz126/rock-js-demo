@@ -1,5 +1,5 @@
-var rock = require('./rock/rock');
-require('./global')
+var rock = require('./rock');
+require('./core/global');
 
 gLog.debug("Demo debug msg");
 gLog.info("Demo info msg");

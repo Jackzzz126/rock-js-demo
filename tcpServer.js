@@ -1,4 +1,4 @@
-let rock = require('./rock/rock');
+let rock = require('./rock');
 
 require('./core/global');
 let proto = require('./core/proto');
