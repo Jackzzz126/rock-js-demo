@@ -8,9 +8,16 @@ let numMsg = {};//msgNum : msgObj
 function init(protoPath, cb1) {
 	fs.readFile(protoPath + '/msgId.conf', (err, data) => {
 		if (err) {
-			gLog.error("Error when read model list");
+			cb1(err);
+			return;
 		}
-		let msgIds = hoconParser(data.toString());
+		let msgIds = null;
+		try {
+			msgIds = hoconParser(data.toString());
+		} catch(ex) {
+			cb1(new Error(ex));
+			return;
+		}
 		async.eachOf(msgIds, function(module, key, cb2) {
 			protobuf.load(protoPath + "/" + key + ".proto", function (err, root) {
 				if(err) {

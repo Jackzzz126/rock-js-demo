@@ -62,8 +62,7 @@ function onConn(socket) {
 			return false;
 		}
 
-		if (typeof route[packId] !== 'function')
-		{
+		if (typeof route[packId] !== 'function') {
 			gLog.debug("No handle for pack: %d.", packId);
 		}
 
@@ -72,14 +71,12 @@ function onConn(socket) {
 		if(!reqMsg) {
 			gLog.debug("Error when pase pack: %d.", packId);
 		}
-		try
-		{
+
+		try {
 			route[packId](socket.connData, reqMsg, function(resMsg) {
 				proto.sendPack(socket, packId + 1, resMsg);
 			});
-		}
-		catch(ex)
-		{
+		} catch(ex) {
 			gLog.debug("Exception: %s when handle %d, uid: %d.", ex.message, packId, socket.uid);
 			gLog.error(ex.stack);
 		}
