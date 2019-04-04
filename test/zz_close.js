@@ -3,7 +3,7 @@ describe("Cleanup", function() {
 	});
 	it("CloseSocket", function(done){
 		for(let i in gUsers) {
-			gUsers[i].close();
+			gUsers[i].closeConn();
 		}
 		done();
 	});

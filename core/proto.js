@@ -8,6 +8,7 @@ let numMsg = {};//msgNum : msgObj
 function init(protoPath, cb1) {
 	fs.readFile(protoPath + '/msgId.conf', (err, data) => {
 		if (err) {
+			gLog.error("erorr when read msgId.confg: %s", err);
 			cb1(err);
 			return;
 		}
@@ -15,12 +16,14 @@ function init(protoPath, cb1) {
 		try {
 			msgIds = hoconParser(data.toString());
 		} catch(ex) {
+			gLog.error("erorr when parse msgId.confg: %s", ex);
 			cb1(new Error(ex));
 			return;
 		}
 		async.eachOf(msgIds, function(module, key, cb2) {
 			protobuf.load(protoPath + "/" + key + ".proto", function (err, root) {
 				if(err) {
+					gLog.error("erorr when parse %s.proto: %s", key, err);
 					cb2(err);
 					return;
 				}

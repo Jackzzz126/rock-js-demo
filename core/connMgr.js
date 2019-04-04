@@ -51,11 +51,11 @@ function onConn(socket) {
 
 		if(packLen > 1024 * 4) {
 			gLog.debug("Pack too long.(>4k)");
-			socket.close();
+			socket.end();
 			return false;
 		} else if(packLen < 0) {
 			gLog.debug(socket, "Pack size error.(<0)");
-			socket.close();
+			socket.end();
 			return false;
 		}
 		if(buffLen < (packLen + headLen)) {

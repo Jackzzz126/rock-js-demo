@@ -43,11 +43,11 @@ function newUser() {
 
 			if(packLen > 1024 * 4) {
 				gLog.debug("Pack too long.(>4k)");
-				socket.close();
+				socket.end();
 				return false;
 			} else if(packLen < 0) {
 				gLog.debug(socket, "Pack size error.(<0)");
-				socket.close();
+				socket.end();
 				return false;
 			}
 			if(buffLen < (packLen + headLen)) {
@@ -90,7 +90,7 @@ function newUser() {
 		proto.sendPack(this._socket, packId, reqMsg);
 	};
 
-	user.close = function() {
+	user.closeConn = function() {
 		this._socket.end();
 	};
 
