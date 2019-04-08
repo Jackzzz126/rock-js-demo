@@ -9,23 +9,20 @@ function init(protoPath, cb1) {
 	fs.readFile(protoPath + '/msgId.conf', (err, data) => {
 		if (err) {
 			gLog.error("erorr when read msgId.confg: %s", err);
-			cb1(err);
-			return;
+			return cb1(err);
 		}
 		let msgIds = null;
 		try {
 			msgIds = hoconParser(data.toString());
 		} catch(ex) {
 			gLog.error("erorr when parse msgId.confg: %s", ex);
-			cb1(new Error(ex));
-			return;
+			return cb1(new Error(ex));
 		}
 		async.eachOf(msgIds, function(module, key, cb2) {
 			protobuf.load(protoPath + "/" + key + ".proto", function (err, root) {
 				if(err) {
 					gLog.error("erorr when parse %s.proto: %s", key, err);
-					cb2(err);
-					return;
+					return cb2(err);
 				}
 				for(let i in module) {
 					numMsg[module[i][1]] = root.lookupType(module[i][0]);
