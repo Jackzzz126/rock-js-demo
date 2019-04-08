@@ -24,13 +24,21 @@ function onConn(socket) {
 	}
 
 	function onSocketError(err) {
-		gLog.debug("socket error: ", err);
+		let uid = 0;
+		if(socket.connData.uid) {
+			uid = socket.connData.uid;
+		}
+		gLog.debug("%s socket error: ", uid, err);
 	}
 	function onSocketClose(hasError) {
+		let uid = 0;
+		if(socket.connData.uid) {
+			uid = socket.connData.uid;
+		}
 		if(hasError) {
-			gLog.debug("socket close with error");
+			gLog.debug("%s socket close with error", uid);
 		} else {
-			gLog.debug("socket close");
+			gLog.debug("%s socket close", uid);
 		}
 	}
 	function onSocketTimeout()
