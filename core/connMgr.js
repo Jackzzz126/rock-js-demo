@@ -5,6 +5,7 @@ function onConn(socket) {
 	gLog.debug("Client connected: " + socket.remoteAddress + ":" + socket.remotePort);
 	socket.setNoDelay(true);
 	socket.connData = {};
+	//uid: socket identifycaton
 
 	let dataPacksRecved = [];
 
@@ -49,12 +50,17 @@ function onConn(socket) {
 		var packId = buff.readInt32BE(0) ^ 0x79669966;
 		var packLen = buff.readInt32BE(4) ^ 0x79669966;
 
+		let uid = 0;
+		if(socket.connData.uid) {
+			uid = socket.connData.uid;
+		}
+
 		if(packLen > 1024 * 4) {
-			gLog.debug("Pack too long.(>4k)");
+			gLog.debug("%s %d Pack too long(>4k)", uid, packId);
 			socket.end();
 			return false;
 		} else if(packLen < 0) {
-			gLog.debug(socket, "Pack size error.(<0)");
+			gLog.debug("%s %d Pack size error(<0)", uid, packId);
 			socket.end();
 			return false;
 		}
@@ -64,14 +70,15 @@ function onConn(socket) {
 
 		let hasHandle = (typeof route[packId]) === 'function';
 		if (!hasHandle) {
-			gLog.debug("No handle for pack: %d.", packId);
+			gLog.debug("%s %d No handle for pack", uid, packId);
 		}
 
 		var packBuff = buff.slice(headLen, headLen + packLen);
 		let reqMsg = proto.parsePack(packId, packBuff);
 		if(!reqMsg) {
-			gLog.debug("Error when pase pack: %d.", packId);
+			gLog.debug("%s %d Error when parse pack: %d.", uid, packId);
 		}
+		gLog.debug("recv: %s %d %s", uid, packId, JSON.stringify(reqMsg));
 
 		if(hasHandle && reqMsg) {
 			try {

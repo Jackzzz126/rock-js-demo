@@ -39,14 +39,17 @@ function parsePack(packId, packBuff) {
 	if(!msg) {
 		return null;
 	} else {
-		let packObj = msg.decode(packBuff);
-		gLog.debug("recv: %d %s", packId, JSON.stringify(packObj));
-		return packObj;
+		return msg.decode(packBuff);
 	}
 }
 
 function sendPack(socket, packId, packObj) {
-	gLog.debug("send: %d %s", packId, JSON.stringify(packObj));
+	let uid = 0;
+	if(socket.connData && socket.connData.uid) {
+		uid = socket.connData.uid;
+	}
+
+	gLog.debug("send: %s %d %s", uid, packId, JSON.stringify(packObj));
 	let dataBuff = numMsg[packId].encode(packObj).finish();
 	let dataBuffLen = dataBuff.length;
 	let headBuff = new Buffer(8);
