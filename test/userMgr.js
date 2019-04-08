@@ -9,6 +9,7 @@ function newUser() {
 		var dataPacksRecved = [];
 
 		let socket = net.createConnection(port, ip);
+		socket.connData = {};
 		user._socket = socket;
 		socket.on("connect", onConn);
 		socket.on("error", onError);
@@ -92,6 +93,10 @@ function newUser() {
 
 	user.closeConn = function() {
 		this._socket.end();
+	};
+
+	user.setId = function(id) {
+		this._socket.connData.id = id;
 	};
 
 	return user;
