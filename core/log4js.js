@@ -59,12 +59,12 @@ log4js.configure({
 		default: { appenders: ['console'], level: 'all' },
 		main: { appenders: ['console', 'dateFileMain'], level: 'all' },
 		error: { appenders: ['dateFileError'], level: "all" },
-		console: { appenders: ['console', 'dateFileMain'], level: "all"},
+		//console: { appenders: ['console', 'dateFileMain'], level: "all"},
 	}
 });
 
 // replace console.log
-const consoleLogger = log4js.getLogger("console");
-console.log = consoleLogger.info.bind(consoleLogger);
+//const consoleLogger = log4js.getLogger("console");
+//console.log = consoleLogger.info.bind(consoleLogger);
 
 exports.createLog = createLog;
