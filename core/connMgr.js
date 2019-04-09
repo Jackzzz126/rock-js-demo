@@ -94,7 +94,7 @@ function onConn(socket) {
 					proto.sendPack(socket, packId + 1, resMsg);
 				});
 			} catch(ex) {
-				gLog.debug("Exception: %s when handle %d, uid: %d.", ex.message, packId, socket.uid);
+				gLog.debug("Exception: %s when handle %d, uid: %d.", ex.message, packId, socket.connData.uid);
 				gLog.error(ex.stack);
 			}
 		}

@@ -8,6 +8,7 @@ gLog.debug("Demo debug msg");
 gLog.info("Demo info msg");
 gLog.warn("Demo warn msg");
 gLog.error("Demo error msg");
+console.log("Demo console log");
 
 _initProto();
 function _initProto() {
