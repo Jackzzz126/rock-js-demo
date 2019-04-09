@@ -86,7 +86,9 @@ function onConn(socket) {
 		if(!reqMsg) {
 			gLog.debug("%s %d Error when parse pack: %d.", uid, packId);
 		}
-		gLog.debug("recv: %s %d %s", uid, packId, JSON.stringify(reqMsg));
+		if(!gConfig.serverConfig.noLogIds[packId]) {
+			gLog.debug("recv: %s %d %s", uid, packId, JSON.stringify(reqMsg));
+		}
 
 		if(hasHandle && reqMsg) {
 			try {

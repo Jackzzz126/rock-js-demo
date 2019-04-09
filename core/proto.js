@@ -44,12 +44,13 @@ function parsePack(packId, packBuff) {
 }
 
 function sendPack(socket, packId, packObj) {
-	let uid = 0;
-	if(socket.connData && socket.connData.uid) {
-		uid = socket.connData.uid;
+	if(!gConfig.serverConfig.noLogIds[packId]) {
+		let uid = 0;
+		if(socket.connData && socket.connData.uid) {
+			uid = socket.connData.uid;
+		}
+		gLog.debug("send: %s %d %s", uid, packId, JSON.stringify(packObj));
 	}
-
-	gLog.debug("send: %s %d %s", uid, packId, JSON.stringify(packObj));
 	let dataBuff = numMsg[packId].encode(packObj).finish();
 	let dataBuffLen = dataBuff.length;
 	let headBuff = new Buffer(8);

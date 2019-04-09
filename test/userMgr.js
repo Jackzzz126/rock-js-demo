@@ -64,6 +64,15 @@ function newUser() {
 			if(!reqMsg) {
 				gLog.debug("Error when pase pack: %d.", packId);
 			}
+
+			let uid = 0;
+			if(user._socket.connData.uid) {
+				uid = socket.connData.uid;
+			}
+			if(!gConfig.serverConfig.noLogIds[packId]) {
+				gLog.debug("recv: %s %d %s", uid, packId, JSON.stringify(reqMsg));
+			}
+
 			try
 			{
 				user[packId](reqMsg);
