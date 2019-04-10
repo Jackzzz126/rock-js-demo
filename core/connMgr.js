@@ -7,8 +7,10 @@ function onConn(socket) {
 	socket.setNoDelay(true);
 	socket.connData = {};
 	socket.connData.lat = rock.time.curTimeMs();
+	socket.connData.closed = false;
 	//uid: socket identifycaton
 	//lat: last active time in ms
+	//closed: is closed already
 	gAllSockets.push(socket);
 
 	let dataPacksRecved = [];
@@ -19,6 +21,9 @@ function onConn(socket) {
 	socket.on("timeout", onSocketTimeout);
 	function onRecvData(dataBuff)
 	{
+		if(socket.closed) {
+			return;
+		}
 		dataPacksRecved.push(dataBuff);
 		while(true) {
 			if(!_parsePack()) {
@@ -42,11 +47,12 @@ function onConn(socket) {
 		if(hasError) {
 			gLog.debug("%s socket close with error", uid);
 		} else {
-			gLog.debug("%s socket close", uid);
+			gLog.debug("%s socket close with no error", uid);
 		}
 		if(uid) {
 			gLog.debug("%s exit by close", uid);
 		}
+		socket.closed = true;
 	}
 	function onSocketTimeout()
 	{
