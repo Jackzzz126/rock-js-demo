@@ -5,3 +5,6 @@ global.gConfig = {};
 
 //--------------------------gLog--------------------------------------------
 global.gLog = log4js.createLog();
+
+//--------------------------gAllSockets--------------------------------------------
+global.gAllSockets = [];//array of sockets

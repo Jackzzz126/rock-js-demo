@@ -1,11 +1,15 @@
 let route = require('./route').route;
 let proto = require('./proto');
+let rock = require('../rock');
 
 function onConn(socket) {
 	gLog.debug("Client connected: " + socket.remoteAddress + ":" + socket.remotePort);
 	socket.setNoDelay(true);
 	socket.connData = {};
+	socket.connData.lat = rock.time.curTimeMs();
 	//uid: socket identifycaton
+	//lat: last active time in ms
+	gAllSockets.push(socket);
 
 	let dataPacksRecved = [];
 
@@ -39,6 +43,9 @@ function onConn(socket) {
 			gLog.debug("%s socket close with error", uid);
 		} else {
 			gLog.debug("%s socket close", uid);
+		}
+		if(uid) {
+			gLog.debug("%s exit by close", uid);
 		}
 	}
 	function onSocketTimeout()

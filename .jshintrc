@@ -35,6 +35,7 @@
 		"gConfig",
 		"gLog",
 		"gUsers",
+		"gAllSockets",
 
 		"describe",//mocha
 		"before",//mocha
