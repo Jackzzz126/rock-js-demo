@@ -87,7 +87,11 @@ function onConn(socket) {
 			gLog.debug("%s %d Error when parse pack: %d.", uid, packId);
 		}
 		if(!gConfig.serverConfig.noLogIds[packId]) {
-			gLog.debug("recv: %s %d %s", uid, packId, JSON.stringify(reqMsg));
+			let packName = proto.getPackNamById(packId);
+			if(!packName) {
+				packName = packId;
+			}
+			gLog.debug("recv: %s %s %s", uid, packName, JSON.stringify(reqMsg));
 		}
 
 		if(hasHandle && reqMsg) {

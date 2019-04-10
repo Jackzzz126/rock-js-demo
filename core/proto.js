@@ -3,7 +3,8 @@ let async = require('async');
 let fs = require('fs');
 var hoconParser = require('hocon-parser');
 
-let numMsg = {};//msgNum : msgObj
+let idObj = {};//packId : msgObj
+let idName = {};//packId : packName
 
 function init(protoPath, cb1) {
 	fs.readFile(protoPath + '/msgId.conf', (err, data) => {
@@ -25,7 +26,8 @@ function init(protoPath, cb1) {
 					return cb2(err);
 				}
 				for(let i in module) {
-					numMsg[module[i][1]] = root.lookupType(module[i][0]);
+					idObj[module[i][1]] = root.lookupType(module[i][0]);
+					idName[module[i][1]] = module[i][0];
 				}
 				cb2();
 			});
@@ -35,7 +37,7 @@ function init(protoPath, cb1) {
 	});
 }
 function parsePack(packId, packBuff) {
-	let msg = numMsg[packId];
+	let msg = idObj[packId];
 	if(!msg) {
 		return null;
 	} else {
@@ -49,9 +51,13 @@ function sendPack(socket, packId, packObj) {
 		if(socket.connData && socket.connData.uid) {
 			uid = socket.connData.uid;
 		}
-		gLog.debug("send: %s %d %s", uid, packId, JSON.stringify(packObj));
+		let packName = getPackNamById(packId);
+		if(!packName) {
+			packName = packId;
+		}
+		gLog.debug("send: %s %s %s", uid, packName, JSON.stringify(packObj));
 	}
-	let dataBuff = numMsg[packId].encode(packObj).finish();
+	let dataBuff = idObj[packId].encode(packObj).finish();
 	let dataBuffLen = dataBuff.length;
 	let headBuff = new Buffer(8);
 	/*jshint bitwise:false*/
@@ -67,8 +73,13 @@ function sendPack(socket, packId, packObj) {
 
 }
 
+function getPackNamById(packId) {
+	return idName[packId];
+}
+
 exports.init = init;
 exports.parsePack = parsePack;
 exports.sendPack = sendPack;
+exports.getPackNamById = getPackNamById;
 
 
