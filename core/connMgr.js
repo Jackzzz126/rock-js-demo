@@ -109,9 +109,15 @@ function onConn(socket) {
 
 		if(hasHandle && reqMsg) {
 			try {
-				route[packId](socket.connData, reqMsg, function(resMsg) {
+				if(!gConfig.serverConfig.noAuthIds[packId] && socket.connData.uid) {
+					let resMsg = {};
+					resMsg.status = gErrors.COMM_USERID_ERROR;
 					proto.sendPack(socket, packId + 1, resMsg);
-				});
+				} else {
+					route[packId](socket.connData, reqMsg, function(resMsg) {
+						proto.sendPack(socket, packId + 1, resMsg);
+					});
+				}
 			} catch(ex) {
 				gLog.debug("Exception: %s when handle %d, uid: %d.", ex.message, packId, socket.connData.uid);
 				gLog.error(ex.stack);

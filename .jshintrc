@@ -36,6 +36,7 @@
 		"gLog",
 		"gUsers",
 		"gAllSockets",
+		"gErrors",
 
 		"describe",//mocha
 		"before",//mocha

@@ -2,6 +2,7 @@ message StatusInfo
 {
 	required uint32 code = 1;				//错误码
 	optional string msg = 2;				//错误提示
+	optional string params = 3;				//错误参数
 }
 
 message HeartBeatReq
