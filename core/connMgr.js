@@ -21,7 +21,7 @@ function onConn(socket) {
 	socket.on("timeout", onSocketTimeout);
 	function onRecvData(dataBuff)
 	{
-		if(socket.closed) {
+		if(socket.connData.closed) {
 			return;
 		}
 		dataPacksRecved.push(dataBuff);
@@ -52,7 +52,7 @@ function onConn(socket) {
 		if(uid) {
 			gLog.debug("%s exit by close", uid);
 		}
-		socket.closed = true;
+		socket.connData.closed = true;
 	}
 	function onSocketTimeout()
 	{

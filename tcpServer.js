@@ -58,7 +58,7 @@ async.waterfall([
 						gLog.debug("%s exit by timeout", connData.uid);
 					}
 					gAllSockets[i].end();
-					connData.closed = true;
+					connData.connData.closed = true;
 					gAllSockets.splice(i, 1);
 				}
 			}
