@@ -109,7 +109,7 @@ function onConn(socket) {
 
 		if(hasHandle && reqMsg) {
 			try {
-				if(!gConfig.serverConfig.noAuthIds[packId] && socket.connData.uid) {
+				if(!gConfig.serverConfig.noAuthIds[packId] && !socket.connData.uid) {
 					let resMsg = {};
 					resMsg.status = gErrors.COMM_USERID_ERROR;
 					proto.sendPack(socket, packId + 1, resMsg);
