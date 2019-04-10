@@ -52,16 +52,16 @@ async.waterfall([
 			let curTimeMs = rock.time.curTimeMs();
 			let timeOut = gConfig.serverConfig.connTimeout * 1000;
 			for(let i in gAllSockets) {
-				let socket = gAllSockets[i];
-				if((curTimeMs - socket.connData.lat) > timeOut) {
-					if(socket.connData.uid) {
-						gLog.debug("%s exit by timeout", socket.connData.uid);
+				let connData = gAllSockets[i].connData;
+				if((curTimeMs - connData.lat) > timeOut) {
+					if(connData.uid) {
+						gLog.debug("%s exit by timeout", connData.uid);
 					}
 					gAllSockets[i].end();
 					gAllSockets.splice(i, 1);
 				}
 			}
-		}, gConfig.serverConfig.connTimeout * 1000);
+		}, 3 * 1000);
 		return cb();
 	},
 ], function( err, result) {
