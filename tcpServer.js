@@ -43,8 +43,13 @@ async.waterfall([
 		});
 	},
 	function(cb) {
-		rock.tcpServer.run(gConfig.serverConfig.port, connMgr.onConn);
-		gLog.info("Tcp server start at %d.", gConfig.serverConfig.port);
+		rock.tcpServer.run(gConfig.serverConfig.tcpPort, connMgr.onConn);
+		gLog.info("Tcp server start at %d.", gConfig.serverConfig.tcpPort);
+		return cb();
+	},
+	function(cb) {
+		rock.httpServer.run(gConfig.serverConfig.httpPort, null);
+		gLog.info("Http server start at port %d.", gConfig.serverConfig.httpPort);
 		return cb();
 	},
 	function(cb) {
