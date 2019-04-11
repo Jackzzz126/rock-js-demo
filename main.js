@@ -6,6 +6,7 @@ let async = require('async');
 require('./core/global');
 let proto = require('./core/proto');
 let connMgr = require('./core/connMgr');
+let reqMgr = require('./core/reqMgr');
 
 gLog.debug("Demo debug msg");
 gLog.info("Demo info msg");
@@ -48,9 +49,14 @@ async.waterfall([
 		return cb();
 	},
 	function(cb) {
-		rock.httpServer.run(gConfig.serverConfig.httpPort, null);
+		rock.httpServer.run(gConfig.serverConfig.httpPort, reqMgr.onReq);
 		gLog.info("Http server start at port %d.", gConfig.serverConfig.httpPort);
 		return cb();
+		//rock.httpServer.run(gConfig.serverConfig.port, onRequest,
+		//		'./https_keys/1_yx-tuya.philm.cc_bundle.crt',
+		//		'./https_keys/2_yx-tuya.philm.cc.key'
+		//		);
+		//gLog.info("Server start at port %d.", gConfig.serverConfig.port);
 	},
 	function(cb) {
 		setInterval(function() {

@@ -1,4 +1,4 @@
-let route = require('./route').route;
+let tcpRoute = require('./tcpRoute').route;
 let proto = require('./proto');
 let rock = require('../rock');
 
@@ -89,7 +89,7 @@ function onConn(socket) {
 			return false;
 		}
 
-		let hasHandle = (typeof route[packId]) === 'function';
+		let hasHandle = (typeof tcpRoute[packId]) === 'function';
 		if (!hasHandle) {
 			gLog.debug("%s %d No handle for pack", uid, packId);
 		}
@@ -114,7 +114,7 @@ function onConn(socket) {
 					resMsg.status = gErrors.COMM_USERID_ERROR;
 					proto.sendPack(socket, packId + 1, resMsg);
 				} else {
-					route[packId](socket.connData, reqMsg, function(resMsg) {
+					tcpRoute[packId](socket.connData, reqMsg, function(resMsg) {
 						proto.sendPack(socket, packId + 1, resMsg);
 					});
 				}

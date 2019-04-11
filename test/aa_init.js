@@ -39,7 +39,7 @@ describe("Init", function() {
 	it("init conn", function(done){
 		let user1 = userMgr.newUser();
 		gUsers.push(user1);
-		user1.conn(gConfig.serverConfig.port, "127.0.0.1", function() {
+		user1.conn(gConfig.serverConfig.tcpPort, "127.0.0.1", function() {
 			done();
 		});
 	});
