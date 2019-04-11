@@ -1,8 +1,8 @@
 let route = {};
 
-let httpDefault = require('../handle/httpDefault');
-route["/"] = httpDefault.ok;
-route["/favicon.ico"] = httpDefault.ok;
+let normal = require('../httpHandle/normal');
+route["/"] = normal.ok;
+route["/favicon.ico"] = normal.ok;
 
 exports.route = route;
 
