@@ -1,7 +1,8 @@
 let route = {};
 
-let common = require('../handle/common');
-route[1001] = common.heartBeat;
+let httpDefault = require('../handle/httpDefault');
+route["/"] = httpDefault.ok;
+route["/favicon.ico"] = httpDefault.ok;
 
 exports.route = route;
 
