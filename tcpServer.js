@@ -54,11 +54,15 @@ async.waterfall([
 			for(let i in gAllSockets) {
 				let connData = gAllSockets[i].connData;
 				if((curTimeMs - connData.lat) > timeOut) {
+					let uid = 0;
 					if(connData.uid) {
-						gLog.debug("%s exit by timeout", connData.uid);
+						uid = connData.uid;
 					}
+					gLog.debug("%s exit by timeout", uid);
+					//if(connData.uid) {//add exit code here
+					//}
 					gAllSockets[i].end();
-					connData.connData.closed = true;
+					connData.closed = true;
 					gAllSockets.splice(i, 1);
 				}
 			}
