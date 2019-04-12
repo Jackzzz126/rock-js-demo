@@ -13,14 +13,14 @@ function getMainLog() {
 				path: './logs/main.log',
 				period: '1d',   // daily rotation
 				count: 9999,
-				level : 'debug',
+				level: 'debug',
 			},
 			{
 				type: 'rotating-file',
 				path: './logs/main_err.log',
 				period: '1d',   // daily rotation
 				count: 9999,
-				level : 'warn',
+				level: 'warn',
 			},
 		]
 	});
