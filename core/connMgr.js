@@ -129,7 +129,7 @@ function onConn(socket) {
 		if(restLen <= 0) {
 			return false;
 		} else {
-			var restBuff = new Buffer(restLen);
+			var restBuff = Buffer.alloc(restLen);
 			buff.copy(restBuff, 0, headLen + packLen, buffLen);
 			dataPacksRecved.push(restBuff);
 			return true;

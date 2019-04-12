@@ -62,7 +62,7 @@ function sendPack(socket, packId, packObj) {
 	}
 	let dataBuff = idObj[packId].encode(packObj).finish();
 	let dataBuffLen = dataBuff.length;
-	let headBuff = new Buffer(8);
+	let headBuff = Buffer.alloc(8);
 	/*jshint bitwise:false*/
 	headBuff.writeInt32BE(packId ^ 0x79669966, 0);
 	headBuff.writeInt32BE(dataBuffLen ^ 0x79669966, 4);
