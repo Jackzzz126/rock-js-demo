@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "dependencies": {
     "async": "^2.6.2",
+    "bunyan": "^1.8.12",
     "hocon-parser": "^1.0.1",
-    "log4js": "^2.5.3",
     "protobufjs": "^6.8.8",
     "ws": "^4.1.0"
   }
