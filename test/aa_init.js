@@ -1,9 +1,10 @@
-require('../core/global');
-let proto = require('../core/proto');
 //let async = require('async');
 let fs = require('fs');
 var hoconParser = require('hocon-parser');
 
+let rock = require('../rock');
+require('../core/global');
+let proto = require('../core/proto');
 let userMgr = require('./userMgr');
 
 global.gUsers = [];
@@ -18,9 +19,7 @@ describe("Init", function() {
 			}
 			try {
 				let config = hoconParser(data.toString());
-				for(let i in config) {
-					gConfig[i] = config[i];
-				}
+				gConfig.serverConfig = rock.comm.expendObj(config.serverConfig, config.dev);
 				gLog.setLevel(gConfig.serverConfig.logLevel);
 				done();
 			} catch(ex) {

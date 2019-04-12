@@ -35,16 +35,11 @@ async.waterfall([
 			}
 			try {
 				let config = hoconParser(data.toString());
-				for(let i in config) {
-					gConfig[i] = config[i];
-				}
 				if(!config[cmd.env]) {
 					gLog.info("can't find config %s:", cmd.env);
 					process.exit(0);
 				} else {
-					for(let i in config[cmd.env]) {
-						gConfig.serverConfig[i] = config[cmd.env][i];
-					}
+					gConfig.serverConfig = rock.comm.expendObj(config.serverConfig, config[cmd.env]);
 				}
 				gLog.setLevel(gConfig.serverConfig.logLevel);
 				return cb();
