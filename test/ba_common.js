@@ -10,10 +10,9 @@ describe("Init", function() {
 		reqMsg.code = 1;
 		user1.sendPack(1001, reqMsg);
 		user1["1002"] = function(resMsg) {
-			debugger;
-			assert.ok(resMsg.status.code === 0)
+			assert.ok(resMsg.status.code === 0);
 			done();
-		}
+		};
 	});
 });
 
