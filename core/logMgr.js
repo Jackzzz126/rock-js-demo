@@ -27,5 +27,19 @@ function getMainLog() {
 	return log;
 }
 
+function getConsoleLog() {
+	var log = bunyan.createLogger({
+		name: 'main',
+		streams: [
+			{
+				stream : process.stdout,
+				level : 'trace',
+			},
+		]
+	});
+	return log;
+}
+
 exports.getMainLog = getMainLog;
+exports.getConsoleLog = getConsoleLog;
 

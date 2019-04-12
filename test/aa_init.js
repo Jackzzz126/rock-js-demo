@@ -6,7 +6,9 @@ let rock = require('../rock');
 require('../core/global');
 let proto = require('../core/proto');
 let userMgr = require('./userMgr');
+var logMgr = require('../core/logMgr');
 
+global.gLog = logMgr.getConsoleLog();
 global.gUsers = [];
 
 describe("Init", function() {

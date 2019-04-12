@@ -9,6 +9,8 @@ require('./core/global');
 let proto = require('./core/proto');
 let connMgr = require('./core/connMgr');
 let reqMgr = require('./core/reqMgr');
+var logMgr = require('./core/logMgr');
+global.gLog = logMgr.getMainLog();
 
 gLog.debug("Demo debug msg");
 gLog.info("Demo info msg");

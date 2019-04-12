@@ -74,7 +74,7 @@ function newUser() {
 				if(!packName) {
 					packName = packId;
 				}
-				gLog.debug("---> %s %s %s", uid, packName, JSON.stringify(reqMsg));
+				gLog.debug(reqMsg, "---> %s %s", uid, packName);
 			}
 
 			try

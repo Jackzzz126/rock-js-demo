@@ -34,14 +34,14 @@ function onReq(request, response){
 			} else {
 				gLog.debug("Unknown method %s", method);
 			}
-			gLog.debug("---> %s %s", pathname, JSON.stringify(reqObj));
+			gLog.debug(reqObj, "---> %s", pathname);
 			if(typeof(httpRoute[pathname]) === "function") {
 				httpRoute[pathname](pathname, method, reqObj, function(resObj) {
 					response.writeHead(200, {
 						"Content-Type" : "text/plain"
 					});
 					let resStr = JSON.stringify(resObj);
-					gLog.debug("<--- %s %s", pathname, resStr);
+					gLog.debug(resObj, "<--- %s", pathname);
 					response.write(resStr);
 					response.end();
 				});

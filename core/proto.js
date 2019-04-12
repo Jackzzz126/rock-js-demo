@@ -58,7 +58,7 @@ function sendPack(socket, packId, packObj) {
 		if(!packName) {
 			packName = packId;
 		}
-		gLog.debug("<--- %s %s %s", uid, packName, JSON.stringify(packObj));
+		gLog.debug(packObj, "<--- %s %s", uid, packName);
 	}
 	let dataBuff = idObj[packId].encode(packObj).finish();
 	let dataBuffLen = dataBuff.length;
