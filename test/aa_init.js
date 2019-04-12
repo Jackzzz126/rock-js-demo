@@ -22,7 +22,6 @@ describe("Init", function() {
 			try {
 				let config = hoconParser(data.toString());
 				gConfig.serverConfig = rock.comm.expendObj(config.serverConfig, config.dev);
-				gLog.setLevel(gConfig.serverConfig.logLevel);
 				done();
 			} catch(ex) {
 				done(err);
