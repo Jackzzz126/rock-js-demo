@@ -1,7 +1,9 @@
-let rock = require('./rock');
 let fs = require('fs');
 var hoconParser = require('hocon-parser');
 let async = require('async');
+const cmd = require('commander');
+
+let rock = require('./rock');
 
 require('./core/global');
 let proto = require('./core/proto');
@@ -14,6 +16,16 @@ gLog.warn("Demo warn msg");
 gLog.error("Demo error msg");
 console.log("Demo console log");
 
+cmd.option('-e, --env <type>', 'environment(dev/tst/oln)').parse(process.argv);
+if(!cmd.env) {
+	gLog.info("must provide an env param");
+	process.exit(0);
+}
+if(cmd.env !== "dev") {
+	gLog.info("env must be one of dev");
+	process.exit(0);
+}
+
 async.waterfall([
 	function(cb) {
 		fs.readFile('./core/config.conf', (err, data) => {
@@ -25,6 +37,14 @@ async.waterfall([
 				let config = hoconParser(data.toString());
 				for(let i in config) {
 					gConfig[i] = config[i];
+				}
+				if(!config[cmd.env]) {
+					gLog.info("can't find config %s:", cmd.env);
+					process.exit(0);
+				} else {
+					for(let i in config[cmd.env]) {
+						gConfig.serverConfig[i] = config[cmd.env][i];
+					}
 				}
 				gLog.setLevel(gConfig.serverConfig.logLevel);
 				return cb();
