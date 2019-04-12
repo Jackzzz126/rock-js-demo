@@ -1,7 +1,7 @@
-var log4js = require('./log4js');
+var logMgr = require('./logMgr');
 
 global.gConfig = {};
-global.gLog = log4js.createLog();
+global.gLog = logMgr.getMainLog();
 global.gAllSockets = [];//array of sockets
 global.gErrors = require('./err').errors;
 

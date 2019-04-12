@@ -41,7 +41,7 @@ async.waterfall([
 				} else {
 					gConfig.serverConfig = rock.comm.expendObj(config.serverConfig, config[cmd.env]);
 				}
-				gLog.setLevel(gConfig.serverConfig.logLevel);
+				gLog.level(gConfig.serverConfig.logLevel);
 				return cb();
 			} catch(ex) {
 				gLog.error("error when parse config.conf: %s", ex);
