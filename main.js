@@ -89,7 +89,7 @@ async.waterfall([
 					//if(connData.uid) {//add exit code here
 					//}
 					gAllSockets[i].end();
-					connData.closed = true;
+					gAllSockets[i].destroy();
 					gAllSockets.splice(i, 1);
 				}
 			}

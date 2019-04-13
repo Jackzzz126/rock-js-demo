@@ -46,7 +46,7 @@ function parsePack(packId, packBuff) {
 }
 
 function sendPack(socket, packId, packObj) {
-	if(socket.connData.closed) {
+	if(socket.destroyed) {
 		return;
 	}
 	if(!gConfig.serverConfig.noLogIds[packId]) {
