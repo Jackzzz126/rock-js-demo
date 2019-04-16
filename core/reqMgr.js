@@ -35,6 +35,7 @@ function onReq(request, response){
 				gLog.debug("Unknown method %s", method);
 			}
 			gLog.debug(reqObj, "---> %s", pathname);
+			pathname = pathname.toLowerCase();
 			if(typeof(httpRoute[pathname]) === "function") {
 				httpRoute[pathname](pathname, method, reqObj, function(resObj) {
 					response.writeHead(200, {
