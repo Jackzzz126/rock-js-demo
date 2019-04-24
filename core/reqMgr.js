@@ -21,7 +21,7 @@ function onReq(request, response){
 	request.addListener("end", function() {
 		try {
 			let method = request.method;
-			let reqObj = null;
+			let reqMsg = null;
 			let packId = 0;
 			let handleFunc = null;
 			if(pathname.toLowerCase() === "/bin") {
@@ -40,29 +40,46 @@ function onReq(request, response){
 					return;
 				}
 				let packBuff = postBuff.slice(headLen, headLen + packLen);
-				reqObj = proto.parsePack(packId, packBuff);
-				gLog.debug(reqObj, "---> %s", proto.getPackNamById(packId));
+				reqMsg = proto.parsePack(packId, packBuff);
 				handleFunc = httpRoute[packId];
+				if(!gConfig.serverConfig.noLogIds[packId]) {
+					let packName = proto.getPackNamById(packId);
+					if(!packName) {
+						packName = packId;
+					}
+					gLog.debug(reqMsg, "---> %s", packName);
+				}
+				gLog.debug(reqMsg, "---> %s", proto.getPackNamById(packId));
+				if(!gConfig.serverConfig.noAuthIds[packId] && !reqMsg.sid) {
+					let resMsg = {};
+					resMsg.status = gErrors.COMM_USERID_ERROR;
+					let buff = proto.formBuff(packId + 1, resMsg);
+					response.write(buff);
+					response.end();
+					return;
+				}
 			} else {
 				if(method === "GET") {
 					if(urlObj.query) {
-						reqObj = urlObj.query;
+						reqMsg = urlObj.query;
 					}
 				} else if(method === "POST"){
 					let postBuff = Buffer.concat(postData);
 					let reqStr = postBuff.toString("utf8");
 					if(reqStr) {
-						reqObj = JSON.parse(reqStr);
+						reqMsg = JSON.parse(reqStr);
 					}
 				} else {
 					gLog.debug("Unknown method %s", method);
 				}
-				gLog.debug(reqObj, "---> %s", pathname);
 				handleFunc = httpRoute[pathname];
+				if(!gConfig.serverConfig.noLogIds[pathname]) {
+					gLog.debug(reqMsg, "---> %s", pathname);
+				}
 			}
 			pathname = pathname.toLowerCase();
 			if(typeof(handleFunc) === "function") {
-				handleFunc(reqObj, function(resObj) {
+				handleFunc(reqMsg, function(resObj) {
 					if(pathname.toLowerCase() === "/bin") {
 						response.writeHead(200, {
 							"Content-Type" : "application/proto"
