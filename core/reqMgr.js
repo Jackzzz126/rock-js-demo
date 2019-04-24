@@ -37,9 +37,9 @@ function onReq(request, response){
 			gLog.debug(reqObj, "---> %s", pathname);
 			pathname = pathname.toLowerCase();
 			if(typeof(httpRoute[pathname]) === "function") {
-				httpRoute[pathname](pathname, method, reqObj, function(resObj) {
+				httpRoute[pathname](pathname, reqObj, function(resObj) {
 					response.writeHead(200, {
-						"Content-Type" : "text/plain"
+						"Content-Type" : "application/json"
 					});
 					let resStr = JSON.stringify(resObj);
 					gLog.debug(resObj, "<--- %s", pathname);
@@ -58,7 +58,7 @@ function onReq(request, response){
 	});
 	function _Response404(response) {
 		response.writeHead(404, {
-			"Content-Type" : "text/plain"
+			"Content-Type" : "application/json"
 		});
 		let resStr = "404 Not found";
 		gLog.debug("<--- %s %s", pathname, resStr);
@@ -67,7 +67,7 @@ function onReq(request, response){
 	}
 	function _Response500(response) {
 		response.writeHead(500, {
-			"Content-Type" : "text/plain"
+			"Content-Type" : "application/json"
 		});
 		let resStr = "500 Internal Error";
 		gLog.debug("<--- %s %s", pathname, resStr);

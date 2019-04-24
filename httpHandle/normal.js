@@ -1,9 +1,9 @@
-function ok(pathname, method, reqMsg, cb) {
+function ok(pathname, reqMsg, cb) {
 	let resMsg = {};
 	resMsg.status = gErrors.OK;
 	return cb(resMsg);
 }
-function test(pathname, method, reqMsg, cb) {
+function test(pathname, reqMsg, cb) {
 	let resMsg = {};
 	resMsg.status = gErrors.OK;
 	return cb(resMsg);
@@ -11,3 +11,4 @@ function test(pathname, method, reqMsg, cb) {
 
 exports.ok = ok;
 exports.test = test;
+
