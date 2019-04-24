@@ -60,20 +60,22 @@ function sendPack(socket, packId, packObj) {
 		}
 		gLog.debug(packObj, "<--- %s %s", uid, packName);
 	}
+	if(socket.writable) {
+		let buff = formBuff(packId, packObj);
+		socket.write(buff);
+	} else {
+		gLog.debug("socket is unwritable");
+	}
+}
+
+function formBuff(packId, packObj) {
 	let dataBuff = idObj[packId].encode(packObj).finish();
 	let dataBuffLen = dataBuff.length;
 	let headBuff = Buffer.alloc(8);
 	/*jshint bitwise:false*/
 	headBuff.writeInt32BE(packId ^ 0x79669966, 0);
 	headBuff.writeInt32BE(dataBuffLen ^ 0x79669966, 4);
-
-	if(socket.writable) {
-		let buff = Buffer.concat([headBuff, dataBuff], dataBuffLen + 8);
-		socket.write(buff);
-	} else {
-		gLog.debug("socket is unwritable");
-	}
-
+	return Buffer.concat([headBuff, dataBuff], dataBuffLen + 8);
 }
 
 function getPackNamById(packId) {
@@ -82,6 +84,7 @@ function getPackNamById(packId) {
 
 exports.init = init;
 exports.parsePack = parsePack;
+exports.formBuff = formBuff;
 exports.sendPack = sendPack;
 exports.getPackNamById = getPackNamById;
 

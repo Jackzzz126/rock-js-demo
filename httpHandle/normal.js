@@ -1,9 +1,15 @@
-function ok(pathname, reqMsg, cb) {
+function ok(reqMsg, cb) {
 	let resMsg = {};
 	resMsg.status = gErrors.OK;
 	return cb(resMsg);
 }
-function test(pathname, reqMsg, cb) {
+function test(reqMsg, cb) {
+	let resMsg = {};
+	resMsg.status = gErrors.OK;
+	return cb(resMsg);
+}
+
+function heartBeat(reqMsg, cb) {
 	let resMsg = {};
 	resMsg.status = gErrors.OK;
 	return cb(resMsg);
@@ -11,4 +17,5 @@ function test(pathname, reqMsg, cb) {
 
 exports.ok = ok;
 exports.test = test;
+exports.heartBeat = heartBeat;
 

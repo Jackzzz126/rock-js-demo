@@ -1,5 +1,7 @@
 var assert = require("assert");
 let rock = require('../rock');
+let proto = require('../core/proto');
+let httpUtil = require('./httpUtil');
 
 let reqMsg = {};
 reqMsg.x = 1;
@@ -24,6 +26,18 @@ describe("Http test", function() {
 		opts.method = "POST";
 		rock.httpUtil.httpRequest(opts, reqMsg, (err, resBuff) => {
 			let resMsg = JSON.parse(resBuff);
+			assert.ok(resMsg.status.code === 0);
+			done();
+		});
+	});
+	it("HttpProto", function(done){
+		opts.method = "POST";
+		opts.path = "/bin";
+		let reqMsg2 = {};
+		reqMsg2.code = 1;
+		let dataBuff = proto.formBuff(1001, reqMsg2);
+		rock.httpUtil.httpRequest(opts, dataBuff, (err, resBuff) => {
+			let resMsg = httpUtil.parseBuff(resBuff);
 			assert.ok(resMsg.status.code === 0);
 			done();
 		});

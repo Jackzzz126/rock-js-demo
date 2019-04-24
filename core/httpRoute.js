@@ -5,5 +5,7 @@ route["/"] = normal.ok;
 route["/favicon.ico"] = normal.ok;
 route["/test"] = normal.test;
 
+route["1001"] = normal.heartBeat;
+
 exports.route = route;
 
