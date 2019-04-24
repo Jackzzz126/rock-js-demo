@@ -45,29 +45,6 @@ function parsePack(packId, packBuff) {
 	}
 }
 
-function sendPack(socket, packId, packObj) {
-	if(socket.destroyed) {
-		return;
-	}
-	if(!gConfig.serverConfig.noLogIds[packId]) {
-		let uid = 0;
-		if(socket.connData && socket.connData.uid) {
-			uid = socket.connData.uid;
-		}
-		let packName = getPackNamById(packId);
-		if(!packName) {
-			packName = packId;
-		}
-		gLog.debug(packObj, "<--- %s %s", uid, packName);
-	}
-	if(socket.writable) {
-		let buff = formBuff(packId, packObj);
-		socket.write(buff);
-	} else {
-		gLog.debug("socket is unwritable");
-	}
-}
-
 function formBuff(packId, packObj) {
 	let dataBuff = idObj[packId].encode(packObj).finish();
 	let dataBuffLen = dataBuff.length;
@@ -85,7 +62,6 @@ function getPackNamById(packId) {
 exports.init = init;
 exports.parsePack = parsePack;
 exports.formBuff = formBuff;
-exports.sendPack = sendPack;
 exports.getPackNamById = getPackNamById;
 
 

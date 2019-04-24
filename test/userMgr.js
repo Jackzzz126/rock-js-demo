@@ -101,7 +101,7 @@ function newUser() {
 	};
 
 	user.sendPack = function(packId, reqMsg) {
-		proto.sendPack(this._socket, packId, reqMsg);
+		_sendPack(this._socket, packId, reqMsg);
 	};
 
 	user.closeConn = function() {
@@ -113,5 +113,27 @@ function newUser() {
 	};
 
 	return user;
+	function _sendPack(socket, packId, resMsg) {
+		if(socket.destroyed) {
+			return;
+		}
+		if(!gConfig.serverConfig.noLogIds[packId]) {
+			let uid = 0;
+			if(socket.connData && socket.connData.uid) {
+				uid = socket.connData.uid;
+			}
+			let packName = proto.getPackNamById(packId);
+			if(!packName) {
+				packName = packId;
+			}
+			gLog.debug(resMsg, "<--- %s %s", uid, packName);
+		}
+		if(socket.writable) {
+			let buff = proto.formBuff(packId, resMsg);
+			socket.write(buff);
+		} else {
+			gLog.debug("socket is unwritable");
+		}
+	}
 }
 exports.newUser = newUser;

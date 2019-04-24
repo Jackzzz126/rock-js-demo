@@ -110,10 +110,10 @@ function onConn(socket) {
 				if(!gConfig.serverConfig.noAuthIds[packId] && !socket.connData.uid) {
 					let resMsg = {};
 					resMsg.status = gErrors.COMM_USERID_ERROR;
-					proto.sendPack(socket, packId + 1, resMsg);
+					_sendPack(socket, packId + 1, resMsg);
 				} else {
 					tcpRoute[packId](socket.connData, reqMsg, function(resMsg) {
-						proto.sendPack(socket, packId + 1, resMsg);
+						_sendPack(socket, packId + 1, resMsg);
 					});
 				}
 			} catch(ex) {
@@ -131,6 +131,29 @@ function onConn(socket) {
 			buff.copy(restBuff, 0, headLen + packLen, buffLen);
 			dataPacksRecved.push(restBuff);
 			return true;
+		}
+	}
+
+	function _sendPack(socket, packId, resMsg) {
+		if(socket.destroyed) {
+			return;
+		}
+		if(!gConfig.serverConfig.noLogIds[packId]) {
+			let uid = 0;
+			if(socket.connData && socket.connData.uid) {
+				uid = socket.connData.uid;
+			}
+			let packName = proto.getPackNamById(packId);
+			if(!packName) {
+				packName = packId;
+			}
+			gLog.debug(resMsg, "<--- %s %s", uid, packName);
+		}
+		if(socket.writable) {
+			let buff = proto.formBuff(packId, resMsg);
+			socket.write(buff);
+		} else {
+			gLog.debug("socket is unwritable");
 		}
 	}
 }
