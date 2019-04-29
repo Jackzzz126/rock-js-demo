@@ -10,21 +10,14 @@ let proto = require('./core/proto');
 let connMgr = require('./core/connMgr');
 let reqMgr = require('./core/reqMgr');
 var logMgr = require('./core/logMgr');
-global.gLog = logMgr.getMainLog();
-
-gLog.debug("Demo debug msg");
-gLog.info("Demo info msg");
-gLog.warn("Demo warn msg");
-gLog.error("Demo error msg");
-console.log("Demo console log");
 
 cmd.option('-e, --env <type>', 'environment(dev/tst/oln)').parse(process.argv);
 if(!cmd.env) {
-	gLog.info("must provide an env param");
+	console.log("must provide an env param");
 	process.exit(0);
 }
 if(cmd.env !== "dev") {
-	gLog.info("env must be one of dev");
+	console.log("env must be one of dev");
 	process.exit(0);
 }
 
@@ -32,20 +25,26 @@ async.waterfall([
 	function(cb) {
 		fs.readFile('./core/config.conf', (err, data) => {
 			if (err) {
-				gLog.error("error when read config.conf: %s", err);
+				console.log("error when read config.conf: ", err);
 				return cb(err);
 			}
 			try {
 				let config = hoconParser(data.toString());
 				if(!config[cmd.env]) {
-					gLog.info("can't find config %s:", cmd.env);
+					console.log("can't find config %s:", cmd.env);
 					process.exit(0);
 				} else {
 					gConfig.serverConfig = rock.comm.expendObj(config.serverConfig, config[cmd.env]);
 				}
+				global.gLog = logMgr.getMainLog(gConfig.serverConfig.logPath);
+				gLog.debug("Demo debug msg");
+				gLog.info("Demo info msg");
+				gLog.warn("Demo warn msg");
+				gLog.error("Demo error msg");
+
 				return cb();
 			} catch(ex) {
-				gLog.error("error when parse config.conf: %s", ex);
+				console.log("error when parse config.conf: %s", ex);
 				return cb(new Error(ex));
 			}
 		});

@@ -1,6 +1,6 @@
 var bunyan = require('bunyan');
 
-function getMainLog() {
+function getMainLog(logPath) {
 	var log = bunyan.createLogger({
 		name: 'main',
 		streams: [
@@ -10,14 +10,14 @@ function getMainLog() {
 			},
 			{
 				type: 'rotating-file',
-				path: './logs/main.log',
+				path: logPath + '/main.log',
 				period: '1d',   // daily rotation
 				count: 9999,
 				level: 'debug',
 			},
 			{
 				type: 'rotating-file',
-				path: './logs/main_err.log',
+				path: logPath + '/main_err.log',
 				period: '1d',   // daily rotation
 				count: 9999,
 				level: 'warn',
