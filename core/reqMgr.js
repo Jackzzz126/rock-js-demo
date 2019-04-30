@@ -83,7 +83,7 @@ function onReq(request, response){
 					let resStr = JSON.stringify(resMsg);
 					response.write(resStr);
 					response.end();
-					gLog.debug(resMsg, "<--- %s", packName);
+					gLog.debug(resMsg, "<--- %s", pathname);
 					return;
 				}
 			}
