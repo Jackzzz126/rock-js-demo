@@ -56,7 +56,7 @@ function onReq(request, response){
 					let buff = proto.formBuff(packId + 1, resMsg);
 					response.write(buff);
 					response.end();
-					gLog.debug("<--- %s %s", packName, JSON.stringify(resMsg));
+					gLog.debug(resMsg, "<--- %s", packName);
 					return;
 				}
 			} else {
@@ -83,16 +83,15 @@ function onReq(request, response){
 					let resStr = JSON.stringify(resMsg);
 					response.write(resStr);
 					response.end();
-					gLog.debug("<--- %s %s", packName, resStr);
+					gLog.debug(resMsg, "<--- %s", packName);
 					return;
 				}
 			}
 			pathname = pathname.toLowerCase();
 			if(typeof(handleFunc) === "function") {
 				handleFunc(reqMsg, function(resMsg) {
-					let resStr = JSON.stringify(resMsg);
 					if(pathname.toLowerCase() === "/bin") {
-						gLog.debug(resMsg, "<--- %s, %s", packName, resStr);
+						gLog.debug(resMsg, "<--- %s", packName);
 						response.writeHead(200, {
 							"Content-Type" : "application/proto"
 						});
@@ -100,10 +99,11 @@ function onReq(request, response){
 						response.write(buff);
 						response.end();
 					} else {
-						gLog.debug(resMsg, "<--- %s, %s", pathname, resStr);
+						gLog.debug(resMsg, "<--- %s", pathname);
 						response.writeHead(200, {
 							"Content-Type" : "application/json"
 						});
+						let resStr = JSON.stringify(resMsg);
 						response.write(resStr);
 						response.end();
 					}
