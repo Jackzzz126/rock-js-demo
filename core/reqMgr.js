@@ -7,6 +7,7 @@ function onReq(request, response){
 	let postData = [];
 	let urlObj = url.parse(request.url, true);
 	let pathname = urlObj.pathname;
+	let packName = null;
 
 	//var addressStr = request.socket.remoteAddress;
 	//if(addressStr) {
@@ -34,6 +35,7 @@ function onReq(request, response){
 				}
 				/*jshint bitwise:false*/
 				packId = postBuff.readInt32BE(0) ^ 0x79669966;
+				packName = proto.getPackNamById(packId);
 				let packLen = postBuff.readInt32BE(4) ^ 0x79669966;
 				if((packLen + headLen) !== buffLen) {
 					_Response500();
@@ -43,19 +45,18 @@ function onReq(request, response){
 				reqMsg = proto.parsePack(packId, packBuff);
 				handleFunc = httpRoute[packId];
 				if(!gConfig.serverConfig.noLogIds[packId]) {
-					let packName = proto.getPackNamById(packId);
 					if(!packName) {
 						packName = packId;
 					}
 					gLog.debug(reqMsg, "---> %s", packName);
 				}
-				gLog.debug(reqMsg, "---> %s", proto.getPackNamById(packId));
 				if(!gConfig.serverConfig.noAuthIds[packId] && !reqMsg.sid) {
 					let resMsg = {};
-					resMsg.status = gErrors.COMM_USERID_ERROR;
+					resMsg.status = gErrors.NEED_LOGIN;
 					let buff = proto.formBuff(packId + 1, resMsg);
 					response.write(buff);
 					response.end();
+					gLog.debug("<--- %s %s", packName, JSON.stringify(resMsg));
 					return;
 				}
 			} else {
@@ -76,24 +77,33 @@ function onReq(request, response){
 				if(!gConfig.serverConfig.noLogIds[pathname]) {
 					gLog.debug(reqMsg, "---> %s", pathname);
 				}
+				if(!gConfig.serverConfig.noAuthIds[pathname] && !reqMsg.sid) {
+					let resMsg = {};
+					resMsg.status = gErrors.NEED_LOGIN;
+					let resStr = JSON.stringify(resMsg);
+					response.write(resStr);
+					response.end();
+					gLog.debug("<--- %s %s", packName, resStr);
+					return;
+				}
 			}
 			pathname = pathname.toLowerCase();
 			if(typeof(handleFunc) === "function") {
-				handleFunc(reqMsg, function(resObj) {
+				handleFunc(reqMsg, function(resMsg) {
+					let resStr = JSON.stringify(resMsg);
 					if(pathname.toLowerCase() === "/bin") {
+						gLog.debug(resMsg, "<--- %s, %s", packName, resStr);
 						response.writeHead(200, {
 							"Content-Type" : "application/proto"
 						});
-						gLog.debug(resObj, "<--- %s", proto.getPackNamById(packId));
-						let buff = proto.formBuff(packId + 1, resObj);
+						let buff = proto.formBuff(packId + 1, resMsg);
 						response.write(buff);
 						response.end();
 					} else {
+						gLog.debug(resMsg, "<--- %s, %s", pathname, resStr);
 						response.writeHead(200, {
 							"Content-Type" : "application/json"
 						});
-						gLog.debug(resObj, "<--- %s", pathname);
-						let resStr = JSON.stringify(resObj);
 						response.write(resStr);
 						response.end();
 					}
@@ -103,7 +113,12 @@ function onReq(request, response){
 				return;
 			}
 		} catch (ex) {
-			gLog.debug("Exception: %s when handle %s", ex.message, pathname);
+			if(packName) {
+				gLog.debug("Exception: %s when handle %s", ex.message, packName);
+			} else {
+				gLog.debug("Exception: %s when handle %s", ex.message, pathname);
+			}
+			gLog.debug("stack: %s", ex.stack);
 			_Response500(response);
 			return;
 		}
