@@ -37,6 +37,8 @@
 		"gUsers",
 		"gAllSockets",
 		"gErrors",
+		"gRedisClient",
+		"gRedisPrefix",
 
 		"describe",//mocha
 		"before",//mocha

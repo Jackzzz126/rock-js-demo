@@ -34,57 +34,52 @@ function _handleBin(request, response, postBuff, urlObj) {
 	let packName = null;
 	let reqMsg = null;
 	let handleFunc = null;
-	try {
-		let headLen = 8;
-		let buffLen = postBuff.length;
-		if(buffLen < headLen) {
-			return _Response500Bin();
-		}
-		/*jshint bitwise:false*/
-		packId = postBuff.readInt32BE(0) ^ 0x79669966;
-		packName = proto.getPackNamById(packId);
-		let packLen = postBuff.readInt32BE(4) ^ 0x79669966;
-		if((packLen + headLen) !== buffLen) {
-			return _Response500Bin();
-		}
-		let packBuff = postBuff.slice(headLen, headLen + packLen);
-		reqMsg = proto.parsePack(packId, packBuff);
-		handleFunc = httpRoute[packId];
 
-		if(typeof(handleFunc) !== "function") {
-			return _Response404Bin();
-		}
-
-		if(!gConfig.serverConfig.noLogIds[packId]) {
-			gLog.debug(reqMsg, "---> %s", packName);
-		}
-
-		if(!gConfig.serverConfig.noAuthIds[packId] && !reqMsg.sid) {
-			let resMsg = {};
-			resMsg.status = gErrors.COMM_SESSION_ERROR;
-			let buff = proto.formBuff(packId + 1, resMsg);
-			response.write(buff);
-			response.end();
-			gLog.debug(resMsg, "<--- %s", packName);
-			return;
-		}
-
-		handleFunc(reqMsg, function(resMsg) {
-			gLog.debug(resMsg, "<--- %s", packName);
-			response.writeHead(200, {
-				"Content-Type" : "application/proto"
-			});
-			let buff = proto.formBuff(packId + 1, resMsg);
-			response.write(buff);
-			response.end();
-		});
-	} catch (ex) {
-		gLog.debug("Exception: %s when handle %s", ex.message, packName);
-		gLog.debug("stack: %s", ex.stack);
-		_Response500Bin();
-		return;
+	let headLen = 8;
+	let buffLen = postBuff.length;
+	if(buffLen < headLen) {
+		return _Response500Bin();
 	}
-	function _Response404Bin(response) {
+	/*jshint bitwise:false*/
+	packId = postBuff.readInt32BE(0) ^ 0x79669966;
+	packName = proto.getPackNamById(packId);
+	let packLen = postBuff.readInt32BE(4) ^ 0x79669966;
+	if((packLen + headLen) !== buffLen) {
+		return _Response500Bin();
+	}
+	let packBuff = postBuff.slice(headLen, headLen + packLen);
+	reqMsg = proto.parsePack(packId, packBuff);
+	handleFunc = httpRoute[packId];
+
+	if(typeof(handleFunc) !== "function") {
+		return _Response404Bin();
+	}
+
+	if(!gConfig.serverConfig.noLogIds[packId]) {
+		gLog.debug(reqMsg, "---> %s", packName);
+	}
+
+	if(gConfig.serverConfig.noAuthIds[packId]) {
+		return _RunHandleBin();
+	} else {
+		if(!reqMsg.sid) {
+			return _OnSessionErrorBin();
+		} else {
+			_ValidSession(reqMsg.sid, function(err, reply){
+				if(err) {
+					return _Response500Bin();
+				}
+				if(reply) {
+					reqMsg._sessionObj = reply;
+					return _RunHandleBin();
+				} else {
+					return _OnSessionErrorBin();
+				}
+			});
+		}
+	}
+
+	function _Response404Bin() {
 		response.writeHead(404, {
 			"Content-Type" : "application/json"
 		});
@@ -102,6 +97,33 @@ function _handleBin(request, response, postBuff, urlObj) {
 		response.write(resStr);
 		response.end();
 	}
+	function _OnSessionErrorBin() {
+		let resMsg = {};
+		resMsg.status = gErrors.COMM_SESSION_ERROR;
+		let buff = proto.formBuff(packId + 1, resMsg);
+		response.write(buff);
+		response.end();
+		gLog.debug(resMsg, "<--- %s", packName);
+		return;
+	}
+	function _RunHandleBin() {
+		try {
+			handleFunc(reqMsg, function(resMsg) {
+				gLog.debug(resMsg, "<--- %s", packName);
+				response.writeHead(200, {
+					"Content-Type" : "application/proto"
+				});
+				let buff = proto.formBuff(packId + 1, resMsg);
+				response.write(buff);
+				response.end();
+			});
+		} catch (ex) {
+			gLog.debug("Exception: %s when handle %s", ex.message, packName);
+			gLog.debug("stack: %s", ex.stack);
+			_Response500Bin();
+			return;
+		}
+	}
 }
 
 function _handleNormal(request, response, postBuff, urlObj) {
@@ -109,54 +131,49 @@ function _handleNormal(request, response, postBuff, urlObj) {
 	let reqMsg = null;
 	let pathname = urlObj.pathname.toLowerCase();
 	let handleFunc = httpRoute[pathname];
-	try {
-		if(method === "GET") {
-			if(urlObj.query) {
-				reqMsg = urlObj.query;
-			}
-		} else if(method === "POST"){
-			let reqStr = postBuff.toString("utf8");
-			if(reqStr) {
-				reqMsg = JSON.parse(reqStr);
-			}
-		} else {
-			gLog.debug("Unknown method %s", method);
-			return;
-		}
 
-		if(typeof(handleFunc) !== "function") {
-			return _Response404();
+	if(method === "GET") {
+		if(urlObj.query) {
+			reqMsg = urlObj.query;
 		}
-
-		if(!gConfig.serverConfig.noLogIds[pathname]) {
-			gLog.debug(reqMsg, "---> %s", pathname);
+	} else if(method === "POST"){
+		let reqStr = postBuff.toString("utf8");
+		if(reqStr) {
+			reqMsg = JSON.parse(reqStr);
 		}
-
-		if(!gConfig.serverConfig.noAuthIds[pathname] && !reqMsg.sid) {
-			let resMsg = {};
-			resMsg.status = gErrors.COMM_SESSION_ERROR;
-			let resStr = JSON.stringify(resMsg);
-			response.write(resStr);
-			response.end();
-			gLog.debug(resMsg, "<--- %s", pathname);
-			return;
-		}
-
-		handleFunc(reqMsg, function(resMsg) {
-			gLog.debug(resMsg, "<--- %s", pathname);
-			response.writeHead(200, {
-				"Content-Type" : "application/json"
-			});
-			let resStr = JSON.stringify(resMsg);
-			response.write(resStr);
-			response.end();
-		});
-	} catch (ex) {
-		gLog.debug("Exception: %s when handle %s", ex.message, pathname);
-		gLog.debug("stack: %s", ex.stack);
-		_Response500();
+	} else {
+		gLog.debug("Unknown method %s", method);
 		return;
 	}
+
+	if(typeof(handleFunc) !== "function") {
+		return _Response404();
+	}
+
+	if(!gConfig.serverConfig.noLogIds[pathname]) {
+		gLog.debug(reqMsg, "---> %s", pathname);
+	}
+
+	if(gConfig.serverConfig.noAuthIds[pathname]) {
+		return _RunHandle();
+	} else {
+		if(!reqMsg.sid) {
+			return _OnSessionError();
+		} else {
+			_ValidSession(reqMsg.sid, function(err, reply){
+				if(err) {
+					return _Response500();
+				}
+				if(reply) {
+					reqMsg._sessionObj = reply;
+					return _RunHandle();
+				} else {
+					return _OnSessionError();
+				}
+			});
+		}
+	}
+
 	function _Response404() {
 		response.writeHead(404, {
 			"Content-Type" : "application/json"
@@ -174,6 +191,62 @@ function _handleNormal(request, response, postBuff, urlObj) {
 		gLog.debug("<--- %s %s", pathname, resStr);
 		response.write(resStr);
 		response.end();
+	}
+	function _OnSessionError() {
+	}
+	function _RunHandle() {
+		try {
+			handleFunc(reqMsg, function(resMsg) {
+				gLog.debug(resMsg, "<--- %s", pathname);
+				response.writeHead(200, {
+					"Content-Type" : "application/json"
+				});
+				let resStr = JSON.stringify(resMsg);
+				response.write(resStr);
+				response.end();
+			});
+		} catch (ex) {
+			gLog.debug("Exception: %s when handle %s", ex.message, pathname);
+			gLog.debug("stack: %s", ex.stack);
+			_Response500();
+			return;
+		}
+	}
+}
+
+function _ValidSession(sid, cb) {
+	_GetUid();
+	function _GetUid(sid) {
+		gRedisClient.get(gRedisPrefix.session + sid, function(err, reply){
+			if(err) {
+				return cb(err, false);
+			} else {
+				if(!reply) {
+					return cb(null, false);
+				} else {
+					_GetSObj(reply);
+				}
+			}
+		});
+	}
+
+	function _GetSObj(uid) {
+		gRedisClient.get(gRedisPrefix.sessionObj + uid, function(err, reply){
+			if(err) {
+				return cb(err, false);
+			} else {
+				if(!reply) {
+					return cb(null, false);
+				} else {
+					let sObj = JSON.parse(reply);
+					if(sObj.sid === sid) {
+						return cb(null, sObj);
+					} else {
+						return cb(null, false);
+					}
+				}
+			}
+		});
 	}
 }
 

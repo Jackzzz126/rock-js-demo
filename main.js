@@ -2,6 +2,7 @@ let fs = require('fs');
 var hoconParser = require('hocon-parser');
 let async = require('async');
 const cmd = require('commander');
+const redis = require('redis');
 
 let rock = require('./rock');
 
@@ -57,6 +58,17 @@ async.waterfall([
 			}
 			return cb();
 		});
+	},
+	function(cb) {
+		/*globals gRedisClient : true*/
+		gRedisClient = redis.createClient({
+			'host' : gConfig.serverConfig.redis.host,
+			'port' : gConfig.serverConfig.redis.port,
+		});
+		gRedisClient.on("error", function (err) {
+		    gLog.error("Redis conn error:" + err);
+		});
+		return cb();
 	},
 	function(cb) {
 		rock.tcpServer.run(gConfig.serverConfig.tcpPort, connMgr.onConn);
