@@ -112,7 +112,8 @@ function onConn(socket) {
 					resMsg.status = gErrors.COMM_USERID_ERROR;
 					_sendPack(socket, packId + 1, resMsg);
 				} else {
-					tcpRoute[packId](socket.connData, reqMsg, function(resMsg) {
+					reqMsg._connData = socket.connData;
+					tcpRoute[packId](reqMsg, function(resMsg) {
 						_sendPack(socket, packId + 1, resMsg);
 					});
 				}
