@@ -52,7 +52,7 @@ function onReq(request, response){
 				}
 				if(!gConfig.serverConfig.noAuthIds[packId] && !reqMsg.sid) {
 					let resMsg = {};
-					resMsg.status = gErrors.NEED_LOGIN;
+					resMsg.status = gErrors.COMM_SESSION_ERROR;
 					let buff = proto.formBuff(packId + 1, resMsg);
 					response.write(buff);
 					response.end();
@@ -79,7 +79,7 @@ function onReq(request, response){
 				}
 				if(!gConfig.serverConfig.noAuthIds[pathname] && !reqMsg.sid) {
 					let resMsg = {};
-					resMsg.status = gErrors.NEED_LOGIN;
+					resMsg.status = gErrors.COMM_SESSION_ERROR;
 					let resStr = JSON.stringify(resMsg);
 					response.write(resStr);
 					response.end();
