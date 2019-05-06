@@ -18,7 +18,7 @@ describe("Http test", function() {
 		opts.method = "GET";
 		rock.httpUtil.httpRequest(opts, reqMsg, (err, resBuff) => {
 			let resMsg = JSON.parse(resBuff);
-			assert.ok(resMsg.status.code === 0);
+			assert.ok(resMsg.status.code === 0, resMsg.status.msg);
 			done();
 		});
 	});
@@ -26,7 +26,7 @@ describe("Http test", function() {
 		opts.method = "POST";
 		rock.httpUtil.httpRequest(opts, reqMsg, (err, resBuff) => {
 			let resMsg = JSON.parse(resBuff);
-			assert.ok(resMsg.status.code === 0);
+			assert.ok(resMsg.status.code === 0, resMsg.status.msg);
 			done();
 		});
 	});
@@ -38,7 +38,17 @@ describe("Http test", function() {
 		let dataBuff = proto.formBuff(1001, reqMsg2);
 		rock.httpUtil.httpRequest(opts, dataBuff, (err, resBuff) => {
 			let resMsg = httpUtil.parseBuff(resBuff);
-			assert.ok(resMsg.status.code === 0);
+			assert.ok(resMsg.status.code === 0, resMsg.status.msg);
+			done();
+		});
+	});
+	it("Login", function(done){
+		opts.method = "POST";
+		opts.path = "/login";
+		reqMsg.uid = 10;
+		rock.httpUtil.httpRequest(opts, reqMsg, (err, resBuff) => {
+			let resMsg = JSON.parse(resBuff);
+			assert.ok(resMsg.status.code === 0, resMsg.status.msg);
 			done();
 		});
 	});

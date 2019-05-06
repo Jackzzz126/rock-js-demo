@@ -193,6 +193,13 @@ function _handleNormal(request, response, postBuff, urlObj) {
 		response.end();
 	}
 	function _OnSessionError() {
+		let resMsg = {};
+		resMsg.status = gErrors.COMM_SESSION_ERROR;
+		let resStr = JSON.stringify(resMsg);
+		response.write(resStr);
+		response.end();
+		gLog.debug("<--- %s %s", pathname, resStr);
+		return;
 	}
 	function _RunHandle() {
 		try {
