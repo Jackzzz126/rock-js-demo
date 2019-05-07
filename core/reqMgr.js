@@ -222,7 +222,7 @@ function _handleNormal(request, response, postBuff, urlObj) {
 }
 
 function _ValidSession(sid, cb) {
-	_GetUid();
+	_GetUid(sid);
 	function _GetUid(sid) {
 		gRedisClient.get(gRedisPrefix.session + sid, function(err, reply){
 			if(err) {
@@ -247,6 +247,7 @@ function _ValidSession(sid, cb) {
 				} else {
 					let sObj = JSON.parse(reply);
 					if(sObj.sid === sid) {
+						sObj.uid = uid;
 						return cb(null, sObj);
 					} else {
 						return cb(null, false);
