@@ -102,7 +102,11 @@ function onConn(socket) {
 			if(!packName) {
 				packName = packId;
 			}
-			gLog.debug(reqMsg, "---> %s %s", uid, packName);
+			if(packLen > 1024) {
+				gLog.debug("---> %s %s", uid, packName);
+			} else {
+				gLog.debug(reqMsg, "---> %s %s", uid, packName);
+			}
 		}
 
 		if(hasHandle && reqMsg) {
@@ -139,6 +143,7 @@ function onConn(socket) {
 		if(socket.destroyed) {
 			return;
 		}
+		let buff = proto.formBuff(packId, resMsg);
 		if(!gConfig.serverConfig.noLogIds[packId]) {
 			let uid = 0;
 			if(socket.connData && socket.connData.uid) {
@@ -148,10 +153,13 @@ function onConn(socket) {
 			if(!packName) {
 				packName = packId;
 			}
-			gLog.debug(resMsg, "<--- %s %s", uid, packName);
+			if(buff.length > 1024) {
+				gLog.debug("<--- %s %s", uid, packName);
+			} else {
+				gLog.debug(resMsg, "<--- %s %s", uid, packName);
+			}
 		}
 		if(socket.writable) {
-			let buff = proto.formBuff(packId, resMsg);
 			socket.write(buff);
 		} else {
 			gLog.debug("socket is unwritable");

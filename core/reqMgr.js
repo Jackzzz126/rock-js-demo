@@ -56,7 +56,11 @@ function _handleBin(request, response, postBuff, urlObj) {
 	}
 
 	if(!gConfig.serverConfig.noLogIds[packId]) {
-		gLog.debug(reqMsg, "---> %s", packName);
+		if(packLen > 1024) {
+			gLog.debug("---> %s", packName);
+		} else {
+			gLog.debug(reqMsg, "---> %s", packName);
+		}
 	}
 
 	if(gConfig.serverConfig.noAuthIds[packId]) {
@@ -109,11 +113,17 @@ function _handleBin(request, response, postBuff, urlObj) {
 	function _RunHandleBin() {
 		try {
 			handleFunc(reqMsg, function(resMsg) {
-				gLog.debug(resMsg, "<--- %s", packName);
 				response.writeHead(200, {
 					"Content-Type" : "application/proto"
 				});
 				let buff = proto.formBuff(packId + 1, resMsg);
+				if(!gConfig.serverConfig.noLogIds[packId]) {
+					if(buff.length > 1024) {
+						gLog.debug("<--- %s", packName);
+					} else {
+						gLog.debug(resMsg, "<--- %s", packName);
+					}
+				}
 				response.write(buff);
 				response.end();
 			});
@@ -151,7 +161,11 @@ function _handleNormal(request, response, postBuff, urlObj) {
 	}
 
 	if(!gConfig.serverConfig.noLogIds[pathname]) {
-		gLog.debug(reqMsg, "---> %s", pathname);
+		if(postBuff.length > 1024) {
+			gLog.debug("---> %s", pathname);
+		} else {
+			gLog.debug(reqMsg, "---> %s", pathname);
+		}
 	}
 
 	if(gConfig.serverConfig.noAuthIds[pathname]) {
@@ -204,11 +218,17 @@ function _handleNormal(request, response, postBuff, urlObj) {
 	function _RunHandle() {
 		try {
 			handleFunc(reqMsg, function(resMsg) {
-				gLog.debug(resMsg, "<--- %s", pathname);
 				response.writeHead(200, {
 					"Content-Type" : "application/json"
 				});
 				let resStr = JSON.stringify(resMsg);
+				if(!gConfig.serverConfig.noLogIds[pathname]) {
+					if(resStr.length > 1024) {
+						gLog.debug("<--- %s", pathname);
+					} else {
+						gLog.debug(resMsg, "<--- %s", pathname);
+					}
+				}
 				response.write(resStr);
 				response.end();
 			});
