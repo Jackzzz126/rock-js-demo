@@ -1,6 +1,6 @@
 var bunyan = require('bunyan');
 
-function getMainLog(logPath, logName) {
+function getLog(logPath, logName) {
 	var log = bunyan.createLogger({
 		name: logName,
 		streams: [
@@ -40,6 +40,6 @@ function getConsoleLog() {
 	return log;
 }
 
-exports.getMainLog = getMainLog;
+exports.getLog = getLog;
 exports.getConsoleLog = getConsoleLog;
 
