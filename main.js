@@ -37,7 +37,7 @@ async.waterfall([
 				} else {
 					gConfig.serverConfig = rock.comm.expendObj(config.serverConfig, config[cmd.env]);
 				}
-				global.gLog = logMgr.getMainLog(gConfig.serverConfig.logPath);
+				global.gLog = logMgr.getMainLog(gConfig.serverConfig.logPath, "rock");
 				gLog.debug("Demo debug msg");
 				gLog.info("Demo info msg");
 				gLog.warn("Demo warn msg");
