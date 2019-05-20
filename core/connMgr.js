@@ -51,6 +51,12 @@ function onConn(socket) {
 			gLog.debug("%s exit by close", uid);
 		}
 		socket.destroy();
+		for(let i in gAllSockets) {
+			if(gAllSockets[i] === socket) {
+				gAllSockets.splice(i, 1);
+				break;
+			}
+		}
 	}
 	function onSocketTimeout()
 	{
@@ -114,11 +120,11 @@ function onConn(socket) {
 				if(!gConfig.serverConfig.noAuthIds[packId] && !socket.connData.uid) {
 					let resMsg = {};
 					resMsg.status = gErrors.COMM_USERID_ERROR;
-					_sendPack(socket, packId + 1, resMsg);
+					sendPack(socket, packId + 1, resMsg);
 				} else {
 					reqMsg._connData = socket.connData;
 					tcpRoute[packId](reqMsg, function(resMsg) {
-						_sendPack(socket, packId + 1, resMsg);
+						sendPack(socket, packId + 1, resMsg);
 					});
 				}
 			} catch(ex) {
@@ -138,34 +144,45 @@ function onConn(socket) {
 			return true;
 		}
 	}
+}
 
-	function _sendPack(socket, packId, resMsg) {
-		if(socket.destroyed) {
-			return;
+function sendPack(socket, packId, resMsg) {
+	if(socket.destroyed) {
+		return;
+	}
+	let buff = proto.formBuff(packId, resMsg);
+	if(!gConfig.serverConfig.noLogIds[packId]) {
+		let uid = 0;
+		if(socket.connData && socket.connData.uid) {
+			uid = socket.connData.uid;
 		}
-		let buff = proto.formBuff(packId, resMsg);
-		if(!gConfig.serverConfig.noLogIds[packId]) {
-			let uid = 0;
-			if(socket.connData && socket.connData.uid) {
-				uid = socket.connData.uid;
-			}
-			let packName = proto.getPackNamById(packId);
-			if(!packName) {
-				packName = packId;
-			}
-			if(buff.length > 1024) {
-				gLog.debug("<--- %s %s", uid, packName);
-			} else {
-				gLog.debug(resMsg, "<--- %s %s", uid, packName);
-			}
+		let packName = proto.getPackNamById(packId);
+		if(!packName) {
+			packName = packId;
 		}
-		if(socket.writable) {
-			socket.write(buff);
+		if(buff.length > 1024) {
+			gLog.debug("<--- %s %s", uid, packName);
 		} else {
-			gLog.debug("socket is unwritable");
+			gLog.debug(resMsg, "<--- %s %s", uid, packName);
+		}
+	}
+	if(socket.writable) {
+		socket.write(buff);
+	} else {
+		gLog.debug("socket is unwritable");
+	}
+}
+
+function sendPackToUser(userId, packId, packObj) {
+	for(let i in gAllSockets) {
+		if(gAllSockets[i].connData.uid === userId) {
+			sendPack(gAllSockets[i], packId, packObj);
+			break;
 		}
 	}
 }
 
 exports.onConn = onConn;
+exports.sendPack = sendPack;
+exports.sendPackToUser = sendPackToUser;
 
