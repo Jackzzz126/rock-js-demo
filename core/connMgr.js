@@ -182,7 +182,19 @@ function sendPackToUser(userId, packId, packObj) {
 	}
 }
 
+function closeUserConn(userId) {
+	for(let i in gAllSockets) {
+		if(gAllSockets[i].connData.uid === userId) {
+			gAllSockets[i].end();
+			gAllSockets[i].destroy();
+			gAllSockets.splice(i, 1);
+			break;
+		}
+	}
+}
+
 exports.onConn = onConn;
 exports.sendPack = sendPack;
 exports.sendPackToUser = sendPackToUser;
+exports.closeUserConn = closeUserConn;
 
