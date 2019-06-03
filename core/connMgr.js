@@ -7,8 +7,8 @@ function onConn(socket) {
 	socket.setNoDelay(true);
 	socket.connData = {};
 	socket.connData.lat = rock.time.curTimeMs();
-	//uid: socket identifycaton
-	//lat: last active time in ms
+	//uid: (string) socket identifycaton
+	//lat: (uint64) last active time in ms
 	gAllSockets.push(socket);
 
 	let dataPacksRecved = [];
@@ -99,10 +99,14 @@ function onConn(socket) {
 		}
 
 		var packBuff = buff.slice(headLen, headLen + packLen);
-		let reqMsg = proto.parsePack(packId, packBuff);
-		if(!reqMsg) {
-			gLog.debug("%s %d Error when parse pack: %d.", uid, packId);
+		let reqMsg = null;
+		try {
+			reqMsg = proto.parsePack(packId, packBuff);
+		} catch(ex) {
+			gLog.debug("%s %d Exception: %s when parse pack", uid, packId, ex.message);
+			gLog.error(ex.stack);
 		}
+
 		if(!gConfig.serverConfig.noLogIds[packId]) {
 			let packName = proto.getPackNamById(packId);
 			if(!packName) {
@@ -128,7 +132,7 @@ function onConn(socket) {
 					});
 				}
 			} catch(ex) {
-				gLog.debug("Exception: %s when handle %d, uid: %d.", ex.message, packId, socket.connData.uid);
+				gLog.debug("%s %d Exception: %s when handle pack", uid, packId, ex.message);
 				gLog.error(ex.stack);
 			}
 		}
