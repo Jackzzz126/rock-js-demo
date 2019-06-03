@@ -103,6 +103,10 @@ function onConn(socket) {
 		try {
 			reqMsg = proto.parsePack(packId, packBuff);
 		} catch(ex) {
+			let resMsg = {};
+			resMsg.status = gErrors.COMM_PARSE_PACK_ERROR;
+			sendPack(socket, packId + 1, resMsg);
+
 			gLog.debug("%s %d Exception: %s when parse pack", uid, packId, ex.message);
 			gLog.error(ex.stack);
 		}
@@ -155,7 +159,7 @@ function sendPack(socket, packId, resMsg) {
 		return;
 	}
 	let buff = proto.formBuff(packId, resMsg);
-	if(!gConfig.serverConfig.noLogIds[packId]) {
+	if(!gConfig.serverConfig.noLogIds[packId - 1]) {
 		let uid = 0;
 		if(socket.connData && socket.connData.uid) {
 			uid = socket.connData.uid;
