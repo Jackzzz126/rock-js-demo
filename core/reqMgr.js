@@ -67,17 +67,17 @@ function _handleBin(request, response, postBuff, urlObj) {
 		return _RunHandleBin();
 	} else {
 		if(!reqMsg.sid) {
-			return _OnSessionErrorBin();
+			return _OnSessionErrorBin(1);
 		} else {
 			_ValidSession(reqMsg.sid, function(err, reply){
 				if(err) {
 					return _Response500Bin();
 				}
-				if(reply) {
-					reqMsg._sessionObj = reply;
+				if(reply.statusCode === 4) {
+					reqMsg._sessionObj = reply.sObj;
 					return _RunHandleBin();
 				} else {
-					return _OnSessionErrorBin();
+					return _OnSessionErrorBin(reply.statusCode);
 				}
 			});
 		}
@@ -101,9 +101,15 @@ function _handleBin(request, response, postBuff, urlObj) {
 		response.write(resStr);
 		response.end();
 	}
-	function _OnSessionErrorBin() {
+	function _OnSessionErrorBin(sErrorCode) {
 		let resMsg = {};
-		resMsg.status = gErrors.COMM_SESSION_ERROR;
+		if(sErrorCode === 2) {
+			resMsg.status = gErrors.COMM_SESSION_EXPIRE;
+		} else if(sErrorCode === 3) {
+			resMsg.status = gErrors.COMM_SESSION_REPLACED;
+		} else {//1
+			resMsg.status = gErrors.COMM_SESSION_ERROR;
+		}
 		let buff = proto.formBuff(packId + 1, resMsg);
 		response.write(buff);
 		response.end();
@@ -172,17 +178,17 @@ function _handleNormal(request, response, postBuff, urlObj) {
 		return _RunHandle();
 	} else {
 		if(!reqMsg.sid) {
-			return _OnSessionError();
+			return _OnSessionError(1);
 		} else {
 			_ValidSession(reqMsg.sid, function(err, reply){
 				if(err) {
 					return _Response500();
 				}
-				if(reply) {
-					reqMsg._sessionObj = reply;
+				if(reply.statusCode === 4) {
+					reqMsg._sessionObj = reply.sObj;
 					return _RunHandle();
 				} else {
-					return _OnSessionError();
+					return _OnSessionError(reply.statusCode);
 				}
 			});
 		}
@@ -206,9 +212,15 @@ function _handleNormal(request, response, postBuff, urlObj) {
 		response.write(resStr);
 		response.end();
 	}
-	function _OnSessionError() {
+	function _OnSessionError(sErrorCode) {
 		let resMsg = {};
-		resMsg.status = gErrors.COMM_SESSION_ERROR;
+		if(sErrorCode === 2) {
+			resMsg.status = gErrors.COMM_SESSION_EXPIRE;
+		} else if(sErrorCode === 3) {
+			resMsg.status = gErrors.COMM_SESSION_REPLACED;
+		} else {//1
+			resMsg.status = gErrors.COMM_SESSION_ERROR;
+		}
 		let resStr = JSON.stringify(resMsg);
 		response.write(resStr);
 		response.end();
@@ -242,6 +254,7 @@ function _handleNormal(request, response, postBuff, urlObj) {
 }
 
 function _ValidSession(sid, cb) {
+	let rtnObj = {};//statusCode: 1: error, 2: timeout, 3: replaced, 4: right
 	_GetUid(sid);
 	function _GetUid(sid) {
 		gRedisClient.get(gRedisPrefix.session + sid, function(err, reply){
@@ -249,7 +262,8 @@ function _ValidSession(sid, cb) {
 				return cb(err, false);
 			} else {
 				if(!reply) {
-					return cb(null, false);
+					rtnObj.statusCode = 2;
+					return cb(null, rtnObj);
 				} else {
 					_GetSObj(reply);
 				}
@@ -263,15 +277,20 @@ function _ValidSession(sid, cb) {
 				return cb(err, false);
 			} else {
 				if(!reply) {
-					return cb(null, false);
+					rtnObj.statusCode = 2;
+					return cb(null, rtnObj);
 				} else {
 					let sObj = JSON.parse(reply);
 					if(sObj.sid === sid) {
 						sObj.uid = uid;
 						gLog.debug("user id: %d", sObj.uid);
-						return cb(null, sObj);
+
+						rtnObj.statusCode = 4;
+						rtnObj.sObj = sObj;
+						return cb(null, rtnObj);
 					} else {
-						return cb(null, false);
+						rtnObj.statusCode = 3;
+						return cb(null, rtnObj);
 					}
 				}
 			}
