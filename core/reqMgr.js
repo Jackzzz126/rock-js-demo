@@ -268,6 +268,7 @@ function _ValidSession(sid, cb) {
 					let sObj = JSON.parse(reply);
 					if(sObj.sid === sid) {
 						sObj.uid = uid;
+						gLog.debug("user id: %d", sObj.uid);
 						return cb(null, sObj);
 					} else {
 						return cb(null, false);
