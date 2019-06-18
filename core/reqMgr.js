@@ -51,8 +51,9 @@ function _handleBin(request, response, postBuff, urlObj) {
 	try {
 		reqMsg = proto.parsePack(packId, packBuff);
 	} catch (ex) {
-		gLog.debug("Exception: %s when parse proto %s", ex.message, packName);
-		gLog.debug("stack: %s", ex.stack);
+		gLog.debug("Exception when handle %s, parse proto error", packName);
+		gLog.debug("%s", ex.message);
+		gLog.debug("%s", ex.stack);
 		return _Response500Bin();
 	}
 	handleFunc = httpRoute[packId];
@@ -140,8 +141,9 @@ function _handleBin(request, response, postBuff, urlObj) {
 				response.end();
 			});
 		} catch (ex) {
-			gLog.debug("Exception: %s when handle %s", ex.message, packName);
-			gLog.debug("stack: %s", ex.stack);
+			gLog.debug("Exception when handle %s", packName);
+			gLog.debug("%s", ex.message);
+			gLog.debug("%s", ex.stack);
 			_Response500Bin();
 			return;
 		}
@@ -160,8 +162,15 @@ function _handleNormal(request, response, postBuff, urlObj) {
 		}
 	} else if(method === "POST"){
 		let reqStr = postBuff.toString("utf8");
-		if(reqStr) {
-			reqMsg = JSON.parse(reqStr);
+		try {
+			if(reqStr) {
+				reqMsg = JSON.parse(reqStr);
+			}
+		} catch (ex) {
+			gLog.debug("Exception when handle %s, parse json error: %s", pathname, reqStr);
+			gLog.debug("%s", ex.message);
+			gLog.debug("%s", ex.stack);
+			return _Response500();
 		}
 	} else {
 		gLog.debug("Unknown method %s", method);
@@ -251,8 +260,9 @@ function _handleNormal(request, response, postBuff, urlObj) {
 				response.end();
 			});
 		} catch (ex) {
-			gLog.debug("Exception: %s when handle %s", ex.message, pathname);
-			gLog.debug("stack: %s", ex.stack);
+			gLog.debug("Exception when handle %s", pathname);
+			gLog.debug("%s", ex.message);
+			gLog.debug("%s", ex.stack);
 			_Response500();
 			return;
 		}
