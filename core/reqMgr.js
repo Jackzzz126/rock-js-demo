@@ -48,7 +48,13 @@ function _handleBin(request, response, postBuff, urlObj) {
 		return _Response500Bin();
 	}
 	let packBuff = postBuff.slice(headLen, headLen + packLen);
-	reqMsg = proto.parsePack(packId, packBuff);
+	try {
+		reqMsg = proto.parsePack(packId, packBuff);
+	} catch (ex) {
+		gLog.debug("Exception: %s when parse proto %s", ex.message, packName);
+		gLog.debug("stack: %s", ex.stack);
+		return _Response500Bin();
+	}
 	handleFunc = httpRoute[packId];
 
 	if(typeof(handleFunc) !== "function") {
