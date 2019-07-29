@@ -1,9 +1,15 @@
 let url = require('url');
 let proto = require('./proto');
 
-let httpRoute = require('./httpRoute').route;
+let httpRoute = require('./httpRoute');
 
-function onReq(request, response){
+function onReqPub(request, response){
+	_OnReq(request, response, httpRoute.pub);
+}
+function onReqPri(request, response){
+	_OnReq(request, response, httpRoute.pri);
+}
+function _OnReq(request, response, route){
 	let postData = [];
 
 	//var addressStr = request.socket.remoteAddress;
@@ -22,14 +28,14 @@ function onReq(request, response){
 
 		let pathname = urlObj.pathname;
 		if(pathname.toLowerCase() === "/bin") {
-			_handleBin(request, response, postBuff, urlObj);
+			_handleBin(request, response, postBuff, urlObj, route);
 		} else {
-			_handleNormal(request, response, postBuff, urlObj);
+			_handleNormal(request, response, postBuff, urlObj, route);
 		}
 	});
 }
 
-function _handleBin(request, response, postBuff, urlObj) {
+function _handleBin(request, response, postBuff, urlObj, route) {
 	let packId = 0;
 	let packName = null;
 	let reqMsg = null;
@@ -56,7 +62,7 @@ function _handleBin(request, response, postBuff, urlObj) {
 		gLog.debug("%s", ex.stack);
 		return _Response500Bin();
 	}
-	handleFunc = httpRoute[packId];
+	handleFunc = route[packId];
 
 	if(typeof(handleFunc) !== "function") {
 		return _Response404Bin();
@@ -150,11 +156,11 @@ function _handleBin(request, response, postBuff, urlObj) {
 	}
 }
 
-function _handleNormal(request, response, postBuff, urlObj) {
+function _handleNormal(request, response, postBuff, urlObj, route) {
 	let method = request.method;
 	let reqMsg = null;
 	let pathname = urlObj.pathname.toLowerCase();
-	let handleFunc = httpRoute[pathname];
+	let handleFunc = route[pathname];
 
 	if(method === "GET") {
 		if(urlObj.query) {
@@ -314,5 +320,7 @@ function _ValidSession(sid, cb) {
 	}
 }
 
-exports.onReq = onReq;
+exports._OnReq = _OnReq;
+exports.onReqPub = onReqPub;
+exports.onReqPri = onReqPri;
 

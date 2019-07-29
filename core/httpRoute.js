@@ -1,12 +1,14 @@
-let route = {};
+let pub = {};
+let pri = {};
 
 let normal = require('../httpHandle/normal');
-route["/"] = normal.ok;
-route["/favicon.ico"] = normal.ok;
-route["/test"] = normal.test;
-route["/login"] = normal.login;
+pub["/"] = normal.ok;
+pub["/favicon.ico"] = normal.ok;
+pub["/test"] = normal.test;
+pub["/login"] = normal.login;
 
-route["1001"] = normal.heartBeat;
+pub["1001"] = normal.heartBeat;
 
-exports.route = route;
+exports.pub = pub;
+exports.pri = pri;
 

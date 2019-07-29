@@ -76,7 +76,7 @@ async.waterfall([
 		return cb();
 	},
 	function(cb) {
-		rock.httpServer.run(gConfig.serverConfig.httpPort, reqMgr.onReq);
+		rock.httpServer.run(gConfig.serverConfig.httpPort, reqMgr.onReqPub);
 		gLog.info("Http server start at port %d.", gConfig.serverConfig.httpPort);
 		return cb();
 		//rock.httpServer.run(gConfig.serverConfig.port, onRequest,
