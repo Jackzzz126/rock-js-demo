@@ -71,7 +71,7 @@ async.waterfall([
 		return cb();
 	},
 	function(cb) {
-		rock.tcpServer.run(gConfig.serverConfig.tcpPort, connMgr.onConn);
+		rock.tcpServer.run(gConfig.serverConfig.tcpPort, connMgr.onConnPub);
 		gLog.info("Tcp server start at %d.", gConfig.serverConfig.tcpPort);
 		return cb();
 	},

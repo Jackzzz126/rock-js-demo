@@ -1,7 +1,9 @@
-let route = {};
+let pub = {};
+let pri = {};
 
 let common = require('../tcpHandle/common');
-route[1001] = common.heartBeat;
+pub[1001] = common.heartBeat;
 
-exports.route = route;
+exports.pub = pub;
+exports.pri = pri;
 

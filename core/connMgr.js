@@ -1,8 +1,12 @@
-let tcpRoute = require('./tcpRoute').route;
+let tcpRoute = require('./tcpRoute');
 let proto = require('./proto');
 let rock = require('../rock');
 
-function onConn(socket) {
+function onConnPub(socket) {
+	_OnConn(socket, tcpRoute.pub);
+}
+
+function _OnConn(socket, route) {
 	gLog.debug("Client connected: " + socket.remoteAddress + ":" + socket.remotePort);
 	socket.setNoDelay(true);
 	socket.connData = {};
@@ -93,7 +97,7 @@ function onConn(socket) {
 			return false;
 		}
 
-		let hasHandle = (typeof tcpRoute[packId]) === 'function';
+		let hasHandle = (typeof route[packId]) === 'function';
 		if (!hasHandle) {
 			gLog.debug("%s %d No handle for pack", uid, packId);
 		}
@@ -106,11 +110,9 @@ function onConn(socket) {
 			let resMsg = {};
 			resMsg.status = gErrors.COMM_PARSE_PACK_ERROR;
 			sendPack(socket, packId + 1, resMsg);
-
 			gLog.debug("%s %d Exception: %s when parse pack", uid, packId, ex.message);
 			gLog.error(ex.stack);
 		}
-
 		if(!gConfig.serverConfig.noLogIds[packId]) {
 			let packName = proto.getPackNamById(packId);
 			if(!packName) {
@@ -131,7 +133,7 @@ function onConn(socket) {
 					sendPack(socket, packId + 1, resMsg);
 				} else {
 					reqMsg._connData = socket.connData;
-					tcpRoute[packId](reqMsg, function(resMsg) {
+					route[packId](reqMsg, function(resMsg) {
 						sendPack(socket, packId + 1, resMsg);
 					});
 				}
@@ -152,6 +154,7 @@ function onConn(socket) {
 			return true;
 		}
 	}
+
 }
 
 function sendPack(socket, packId, resMsg) {
@@ -201,7 +204,7 @@ function closeUserConn(userId) {
 	}
 }
 
-exports.onConn = onConn;
+exports.onConnPub = onConnPub;
 exports.sendPack = sendPack;
 exports.sendPackToUser = sendPackToUser;
 exports.closeUserConn = closeUserConn;
