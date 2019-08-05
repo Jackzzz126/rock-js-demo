@@ -305,7 +305,7 @@ function _ValidSession(sid, cb) {
 					let sObj = JSON.parse(reply);
 					if(sObj.sid === sid) {
 						sObj.uid = uid;
-						gLog.debug("user id: %d", sObj.uid);
+						gLog.debug("user id: %s", sObj.uid);
 
 						rtnObj.statusCode = 4;
 						rtnObj.sObj = sObj;
