@@ -6,7 +6,7 @@
     "bunyan": "^1.8.12",
     "commander": "^2.20.0",
     "hocon-parser": "^1.0.1",
-    "protobufjs": "^6.8.8",
+    "protobufjs": "^6.11.3",
     "redis": "^2.8.0",
     "ws": "^4.1.0"
   }
